@@ -13,8 +13,8 @@ const channels = [
 
 const Index = () => {
   const navigate = useNavigate();
-  const [helpTypeFilter, setHelpTypeFilter] = useState('全部');
-  const [animalFilter, setAnimalFilter] = useState('全部');
+  const [statusFilter, setStatusFilter] = useState('全部');
+  const [auxFilter, setAuxFilter] = useState('全部');
 
   const urgentCount = mockCases.filter((c) => c.isUrgent).length;
   const totalCases = mockCases.length;
