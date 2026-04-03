@@ -74,7 +74,7 @@ const PublisherProfile = () => {
           <div className="mt-4 grid grid-cols-4 gap-2">
             {[
               { label: '积分', value: publisher.totalPoints, icon: <Star className="h-3 w-3 text-points" /> },
-              { label: '案例', value: publisher.casesPublished },
+              { label: '个案', value: publisher.casesPublished },
               { label: '更新', value: publisher.updatesCount },
               { label: '关注者', value: publisher.followers },
             ].map((s) => (
@@ -124,7 +124,7 @@ const PublisherProfile = () => {
             <p className="text-xs leading-relaxed text-muted-foreground">
               {isShelter 
                 ? `${publisher.name} 已收到来自社区的 ${publisher.helpsReceived} 次积分赠送和物资认领`
-                : `${publisher.name} 发起的案例共收到 ${publisher.helpsReceived} 次社区助力`
+                : `${publisher.name} 发起的个案共收到 ${publisher.helpsReceived} 次社区助力`
               }
             </p>
           </div>
@@ -133,13 +133,13 @@ const PublisherProfile = () => {
         {/* Published cases */}
         <div className="mt-4">
           <h2 className="mb-2 text-sm font-semibold text-foreground">
-            📋 {isShelter ? '已发布案例' : '发起的案例'}
+            📋 {isShelter ? '已发布个案' : '发起的个案'}
           </h2>
           {publisherCases.length > 0 ? (
             publisherCases.map((c) => <CaseCard key={c.id} caseItem={c} />)
           ) : (
             <div className="rounded-xl bg-card p-6 text-center text-xs text-muted-foreground shadow-sm">
-              暂无案例
+              暂无个案
             </div>
           )}
         </div>

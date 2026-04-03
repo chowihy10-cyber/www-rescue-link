@@ -4,8 +4,8 @@ import { ChevronRight, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const menuItems = [
-  { label: '我发布的案例', count: mockUser.casesPublished, icon: '📝' },
-  { label: '我关注的案例', count: mockUser.casesFollowed, icon: '⭐' },
+  { label: '我发布的个案', count: mockUser.casesPublished, icon: '📝' },
+  { label: '我关注的个案', count: mockUser.casesFollowed, icon: '⭐' },
   { label: '我参与的助力', count: mockUser.helpsGiven, icon: '🤝' },
   { label: '我更新的记录', count: 5, icon: '📋' },
   { label: '积分记录', count: null, icon: '💰' },
@@ -36,7 +36,7 @@ const Profile = () => {
           <div className="h-8 w-px bg-header-fg/15" />
           <div className="text-center">
             <p className="text-xl font-bold text-header-fg">{mockUser.casesPublished}</p>
-            <p className="text-[10px] text-header-fg/60">发布案例</p>
+            <p className="text-[10px] text-header-fg/60">发布个案</p>
           </div>
           <div className="h-8 w-px bg-header-fg/15" />
           <div className="text-center">
@@ -83,10 +83,10 @@ const Profile = () => {
           <h3 className="text-sm font-semibold text-foreground">💰 最近积分记录</h3>
           <div className="mt-3 space-y-2">
             {[
-              { action: '分享救助案例', points: '+5', time: '今天 14:30' },
+              { action: '分享救助个案', points: '+5', time: '今天 14:30' },
               { action: '阅读救助指南', points: '+10', time: '今天 12:00' },
               { action: '购买公益文创', points: '+15', time: '昨天 18:20' },
-              { action: '赠送积分给案例', points: '-50', time: '昨天 10:00' },
+              { action: '赠送积分给个案', points: '-50', time: '昨天 10:00' },
               { action: '邀请新用户', points: '+20', time: '3天前' },
             ].map((r, i) => (
               <div key={i} className="flex items-center justify-between rounded-lg bg-muted/50 px-3 py-2">

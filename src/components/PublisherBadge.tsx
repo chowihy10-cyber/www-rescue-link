@@ -46,9 +46,9 @@ const PublisherBadge = ({ publisher, size = 'sm', showStats = false }: Publisher
         {showStats && (
           <p className="text-[10px] text-muted-foreground">
             {isShelter ? (
-              <>{publisher.city} · 已发布 {publisher.casesPublished} 个案例</>
+              <>{publisher.city} · 已发布 {publisher.casesPublished} 个个案</>
             ) : (
-              <>已发起 {publisher.casesPublished} 个 case · {publisher.updatesCount} 次更新</>
+              <>已发起 {publisher.casesPublished} 个个案 · {publisher.updatesCount} 次更新</>
             )}
           </p>
         )}

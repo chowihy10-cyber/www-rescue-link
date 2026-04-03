@@ -14,7 +14,7 @@ const CaseDetail = () => {
   if (!caseItem) {
     return (
       <MobileLayout hideTabBar>
-        <div className="flex h-screen items-center justify-center text-muted-foreground">案例未找到</div>
+        <div className="flex h-screen items-center justify-center text-muted-foreground">个案未找到</div>
       </MobileLayout>
     );
   }
@@ -30,7 +30,7 @@ const CaseDetail = () => {
         <button onClick={() => navigate(-1)} className="rounded-full p-1">
           <ArrowLeft className="h-5 w-5 text-foreground" />
         </button>
-        <span className="text-sm font-semibold text-foreground">案例详情</span>
+        <span className="text-sm font-semibold text-foreground">个案详情</span>
         <button onClick={() => toast.success('链接已复制，快去分享吧！')} className="rounded-full p-1">
           <Share2 className="h-5 w-5 text-foreground" />
         </button>
@@ -139,11 +139,11 @@ const CaseDetail = () => {
             <span className="text-xs font-medium text-accent-foreground">认领需求</span>
           </button>
           <button
-            onClick={() => toast.success('链接已复制，快去分享吧！')}
+            onClick={() => toast.success('转发内容已生成，可复制分享到社交平台')}
             className="flex flex-col items-center gap-1 rounded-xl bg-muted p-3 transition-colors active:bg-muted/80"
           >
-            <span className="text-xl">📤</span>
-            <span className="text-xs font-medium text-muted-foreground">帮忙转发</span>
+            <span className="text-xl">📋</span>
+            <span className="text-xs font-medium text-muted-foreground">生成转发内容</span>
           </button>
         </div>
         <p className="mt-2 text-center text-[10px] text-muted-foreground">
