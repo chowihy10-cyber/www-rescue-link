@@ -30,7 +30,7 @@ const CaseDetail = () => {
         <button onClick={() => navigate(-1)} className="rounded-full p-1">
           <ArrowLeft className="h-5 w-5 text-foreground" />
         </button>
-        <span className="text-sm font-semibold text-foreground">案例详情</span>
+        <span className="text-sm font-semibold text-foreground">个案详情</span>
         <button onClick={() => toast.success('链接已复制，快去分享吧！')} className="rounded-full p-1">
           <Share2 className="h-5 w-5 text-foreground" />
         </button>
