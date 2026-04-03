@@ -124,7 +124,7 @@ const PublisherProfile = () => {
             <p className="text-xs leading-relaxed text-muted-foreground">
               {isShelter 
                 ? `${publisher.name} 已收到来自社区的 ${publisher.helpsReceived} 次积分赠送和物资认领`
-                : `${publisher.name} 发起的案例共收到 ${publisher.helpsReceived} 次社区助力`
+                : `${publisher.name} 发起的个案共收到 ${publisher.helpsReceived} 次社区助力`
               }
             </p>
           </div>
