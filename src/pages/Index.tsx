@@ -6,9 +6,9 @@ import CaseCard from '@/components/CaseCard';
 import { useState } from 'react';
 
 const channels = [
-  { label: '领养', sub: '为它找一个家', path: '/channel/adoption', icon: Heart, bg: 'bg-emerald-50', iconColor: 'text-emerald-500', titleColor: 'text-emerald-700' },
-  { label: '寻宠地图', sub: '附近走失宠物', path: '/lost-pet-map', icon: Map, bg: 'bg-amber-50', iconColor: 'text-amber-500', titleColor: 'text-amber-700' },
-  { label: '小院补给', sub: '支持流浪小院', path: '/channel/shelter', icon: Package, bg: 'bg-orange-50', iconColor: 'text-orange-400', titleColor: 'text-orange-600' },
+  { label: '领养', sub: '为它找一个家', path: '/channel/adoption', icon: Heart, bg: 'bg-[hsl(30,60%,95%)]', iconColor: 'text-[hsl(24,75%,50%)]', titleColor: 'text-[hsl(24,60%,35%)]' },
+  { label: '寻宠地图', sub: '附近走失宠物', path: '/lost-pet-map', icon: Map, bg: 'bg-[hsl(38,65%,93%)]', iconColor: 'text-[hsl(35,80%,48%)]', titleColor: 'text-[hsl(35,55%,32%)]' },
+  { label: '小院补给', sub: '支持流浪小院', path: '/channel/shelter', icon: Package, bg: 'bg-[hsl(25,55%,94%)]', iconColor: 'text-[hsl(20,70%,52%)]', titleColor: 'text-[hsl(20,50%,33%)]' },
 ];
 
 const Index = () => {
