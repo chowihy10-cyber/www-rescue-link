@@ -14,7 +14,7 @@ const CaseDetail = () => {
   if (!caseItem) {
     return (
       <MobileLayout hideTabBar>
-        <div className="flex h-screen items-center justify-center text-muted-foreground">案例未找到</div>
+        <div className="flex h-screen items-center justify-center text-muted-foreground">个案未找到</div>
       </MobileLayout>
     );
   }
