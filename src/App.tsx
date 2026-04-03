@@ -18,6 +18,7 @@ import PublishLostPet from "./pages/forms/PublishLostPet";
 import Shop from "./pages/Shop";
 import Guide from "./pages/Guide";
 import LostPetMap from "./pages/LostPetMap";
+import PublisherProfile from "./pages/PublisherProfile";
 
 const queryClient = new QueryClient();
 
