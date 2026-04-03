@@ -100,17 +100,24 @@ const Index = () => {
           </button>
         )}
 
-        {/* Channels - orange bg, white text, no icons */}
+        {/* Channels — lightweight entry cards */}
         <div className="mt-3 grid grid-cols-3 gap-2">
-          {channels.map((ch) => (
-            <button
-              key={ch.label}
-              onClick={() => navigate(ch.path)}
-              className="flex items-center justify-center rounded-2xl bg-primary px-3 py-3 shadow-sm transition-transform active:scale-[0.97]"
-            >
-              <p className="text-[14px] font-semibold text-primary-foreground">{ch.label}</p>
-            </button>
-          ))}
+          {channels.map((ch) => {
+            const Icon = ch.icon;
+            return (
+              <button
+                key={ch.label}
+                onClick={() => navigate(ch.path)}
+                className={`flex items-center gap-2 rounded-2xl ${ch.bg} px-3 py-2.5 transition-transform active:scale-[0.97]`}
+              >
+                <Icon className={`h-5 w-5 shrink-0 ${ch.iconColor}`} strokeWidth={2} />
+                <div className="text-left">
+                  <p className={`text-[14px] font-bold leading-tight ${ch.titleColor}`}>{ch.label}</p>
+                  <p className="text-[10px] leading-tight text-muted-foreground">{ch.sub}</p>
+                </div>
+              </button>
+            );
+          })}
         </div>
 
         {/* Filters */}
