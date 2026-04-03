@@ -193,7 +193,7 @@ export const mockCases: CaseItem[] = [
     id: '4',
     title: '被弃养泰迪寻找新家',
     animalType: '狗',
-    status: '寻找领养',
+    status: '待安置',
     location: '成都市锦江区',
     city: '成都',
     distance: '8.1km',
