@@ -4,8 +4,8 @@ import { ChevronRight, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const menuItems = [
-  { label: '我发布的案例', count: mockUser.casesPublished, icon: '📝' },
-  { label: '我关注的案例', count: mockUser.casesFollowed, icon: '⭐' },
+  { label: '我发布的个案', count: mockUser.casesPublished, icon: '📝' },
+  { label: '我关注的个案', count: mockUser.casesFollowed, icon: '⭐' },
   { label: '我参与的助力', count: mockUser.helpsGiven, icon: '🤝' },
   { label: '我更新的记录', count: 5, icon: '📋' },
   { label: '积分记录', count: null, icon: '💰' },
