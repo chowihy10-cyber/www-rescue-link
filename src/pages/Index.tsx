@@ -45,7 +45,7 @@ const Index = () => {
               </div>
               <button
                 onClick={() => navigate('/help-center')}
-                className="ml-2 text-[13px] text-primary/80 font-medium"
+                className="ml-2 text-[12px] text-header-fg/40 font-normal"
               >
                 查看助力任务 →
               </button>
