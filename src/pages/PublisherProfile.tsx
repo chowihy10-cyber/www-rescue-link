@@ -74,7 +74,7 @@ const PublisherProfile = () => {
           <div className="mt-4 grid grid-cols-4 gap-2">
             {[
               { label: '积分', value: publisher.totalPoints, icon: <Star className="h-3 w-3 text-points" /> },
-              { label: '案例', value: publisher.casesPublished },
+              { label: '个案', value: publisher.casesPublished },
               { label: '更新', value: publisher.updatesCount },
               { label: '关注者', value: publisher.followers },
             ].map((s) => (
