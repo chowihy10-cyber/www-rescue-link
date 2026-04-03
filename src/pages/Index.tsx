@@ -13,20 +13,21 @@ const channels = [
 
 const Index = () => {
   const navigate = useNavigate();
-  const [helpTypeFilter, setHelpTypeFilter] = useState('全部');
-  const [animalFilter, setAnimalFilter] = useState('全部');
+  const [statusFilter, setStatusFilter] = useState('全部');
+  const [auxFilter, setAuxFilter] = useState('全部');
 
   const urgentCount = mockCases.filter((c) => c.isUrgent).length;
   const totalCases = mockCases.length;
 
   const filteredCases = mockCases.filter((c) => {
-    const helpMatch = helpTypeFilter === '全部' ||
-      (helpTypeFilter === '紧急' && c.isUrgent) ||
-      (helpTypeFilter === '待送医' && c.status.includes('送医')) ||
-      (helpTypeFilter === '治疗中' && c.status.includes('治疗')) ||
-      (helpTypeFilter === '待安置' && (c.status.includes('寄养') || c.status.includes('领养')));
-    const animalMatch = animalFilter === '全部' || c.animalType === animalFilter;
-    return helpMatch && animalMatch;
+    const statusMatch = statusFilter === '全部' || c.status === statusFilter;
+    const auxMatch = auxFilter === '全部' ||
+      (auxFilter === '紧急' && c.isUrgent) ||
+      (auxFilter === '猫' && c.animalType === '猫') ||
+      (auxFilter === '狗' && c.animalType === '狗') ||
+      (auxFilter === '其他' && c.animalType === '其他') ||
+      auxFilter === '附近';
+    return statusMatch && auxMatch;
   });
 
   const allCases = [...filteredCases].sort((a, b) => (b.isUrgent ? 1 : 0) - (a.isUrgent ? 1 : 0));
@@ -87,14 +88,14 @@ const Index = () => {
           })}
         </div>
 
-        {/* D. Primary filter: help type */}
+        {/* D. Primary filter: status */}
         <div className="mt-3 flex gap-0.5 overflow-x-auto rounded-xl bg-muted p-0.5 hide-scrollbar">
-          {['全部', '紧急', '待送医', '治疗中', '待安置'].map((f) => (
+          {['全部', '待接应', '待送医', '治疗中', '待安置', '已完成'].map((f) => (
             <button
               key={f}
-              onClick={() => setHelpTypeFilter(f)}
+              onClick={() => setStatusFilter(f)}
               className={`shrink-0 rounded-lg px-3 py-1.5 text-[13px] font-medium transition-colors ${
-                helpTypeFilter === f ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground'
+                statusFilter === f ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground'
               }`}
             >
               {f}
@@ -102,14 +103,14 @@ const Index = () => {
           ))}
         </div>
 
-        {/* E. Secondary filter: animal type + nearby */}
+        {/* E. Secondary filter: urgency + animal + nearby */}
         <div className="mt-2 flex gap-1.5 overflow-x-auto hide-scrollbar">
-          {['全部', '猫', '狗', '其他', '附近'].map((f) => (
+          {['全部', '紧急', '猫', '狗', '附近'].map((f) => (
             <button
               key={f}
-              onClick={() => setAnimalFilter(f === '附近' ? animalFilter : f)}
+              onClick={() => setAuxFilter(f)}
               className={`shrink-0 rounded-full px-3 py-1 text-[12px] font-medium transition-colors ${
-                (f !== '附近' && animalFilter === f) ? 'bg-primary text-primary-foreground' : 'bg-card text-muted-foreground shadow-sm'
+                auxFilter === f ? 'bg-primary text-primary-foreground' : 'bg-card text-muted-foreground shadow-sm'
               }`}
             >
               {f}
