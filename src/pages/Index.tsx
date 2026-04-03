@@ -20,13 +20,14 @@ const Index = () => {
   const totalCases = mockCases.length;
 
   const filteredCases = mockCases.filter((c) => {
-    const helpMatch = helpTypeFilter === '全部' ||
-      (helpTypeFilter === '紧急' && c.isUrgent) ||
-      (helpTypeFilter === '待送医' && c.status.includes('送医')) ||
-      (helpTypeFilter === '治疗中' && c.status.includes('治疗')) ||
-      (helpTypeFilter === '待安置' && (c.status.includes('寄养') || c.status.includes('领养')));
-    const animalMatch = animalFilter === '全部' || c.animalType === animalFilter;
-    return helpMatch && animalMatch;
+    const statusMatch = statusFilter === '全部' || c.status === statusFilter;
+    const auxMatch = auxFilter === '全部' ||
+      (auxFilter === '紧急' && c.isUrgent) ||
+      (auxFilter === '猫' && c.animalType === '猫') ||
+      (auxFilter === '狗' && c.animalType === '狗') ||
+      (auxFilter === '其他' && c.animalType === '其他') ||
+      auxFilter === '附近';
+    return statusMatch && auxMatch;
   });
 
   const allCases = [...filteredCases].sort((a, b) => (b.isUrgent ? 1 : 0) - (a.isUrgent ? 1 : 0));
