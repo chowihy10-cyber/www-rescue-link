@@ -1,5 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { CaseItem } from '@/data/mockData';
+import { getPublisherForCase } from '@/data/publishers';
+import PublisherBadge from '@/components/PublisherBadge';
 import { MapPin, Star } from 'lucide-react';
 import { toast } from 'sonner';
 import { useState } from 'react';
