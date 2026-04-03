@@ -1,5 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { CaseItem } from '@/data/mockData';
+import { getPublisherForCase } from '@/data/publishers';
+import PublisherBadge from '@/components/PublisherBadge';
 import { MapPin, Star } from 'lucide-react';
 import { toast } from 'sonner';
 import { useState } from 'react';
@@ -33,6 +35,7 @@ const CaseCard = ({ caseItem }: { caseItem: CaseItem }) => {
   const needsCount = caseItem.needs.length;
   const imgSrc = caseImages[caseItem.id] || cat1;
   const actions = actionConfigs[caseItem.helpType] || actionConfigs.supply;
+  const publisher = getPublisherForCase(caseItem.id);
 
   const handleAction = (e: React.MouseEvent, action: string) => {
     e.stopPropagation();
@@ -125,10 +128,15 @@ const CaseCard = ({ caseItem }: { caseItem: CaseItem }) => {
             </div>
           </div>
 
-          {/* Footer */}
-          <div className="mt-0.5 flex items-center justify-between text-[9px]">
-            <span className="text-muted-foreground">
-              {caseItem.updatedAt} · 需求单 {needsCount} 项
+          {/* Publisher + Footer */}
+          <div className="mt-0.5 flex items-center justify-between">
+            {publisher ? (
+              <PublisherBadge publisher={publisher} size="sm" />
+            ) : (
+              <span className="text-[9px] text-muted-foreground">{caseItem.updatedAt}</span>
+            )}
+            <span className="text-[9px] text-muted-foreground">
+              {caseItem.updatedAt}
             </span>
           </div>
         </div>

@@ -18,6 +18,7 @@ import PublishLostPet from "./pages/forms/PublishLostPet";
 import Shop from "./pages/Shop";
 import Guide from "./pages/Guide";
 import LostPetMap from "./pages/LostPetMap";
+import PublisherProfile from "./pages/PublisherProfile";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +43,7 @@ const App = () => (
           <Route path="/publish-lost-pet" element={<PublishLostPet />} />
           <Route path="/shop" element={<Shop />} />
           <Route path="/guide" element={<Guide />} />
+          <Route path="/publisher/:id" element={<PublisherProfile />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

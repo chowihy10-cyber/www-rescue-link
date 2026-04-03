@@ -1,6 +1,8 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import MobileLayout from '@/components/MobileLayout';
 import { mockCases } from '@/data/mockData';
+import { getPublisherForCase } from '@/data/publishers';
+import PublisherBadge from '@/components/PublisherBadge';
 import { ArrowLeft, Share2, MapPin, Phone, Shield, CheckCircle2, Clock, Link2 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -19,6 +21,7 @@ const CaseDetail = () => {
 
   const remaining = caseItem.totalPoints - caseItem.earnedPoints;
   const progress = (caseItem.earnedPoints / caseItem.totalPoints) * 100;
+  const publisher = getPublisherForCase(caseItem.id);
 
   return (
     <MobileLayout hideTabBar>
@@ -44,6 +47,15 @@ const CaseDetail = () => {
             <span className="text-xs text-muted-foreground">{caseItem.animalType === '猫' ? '🐱' : '🐶'} {caseItem.animalType}</span>
           </div>
           <h1 className="mt-2 text-lg font-bold leading-snug text-foreground">{caseItem.title}</h1>
+
+          {/* Publisher Info */}
+          {publisher && (
+            <div className="mt-2.5 flex items-center justify-between rounded-lg bg-muted/60 px-3 py-2">
+              <PublisherBadge publisher={publisher} size="md" showStats />
+              <span className="shrink-0 text-[10px] text-primary">查看主页 →</span>
+            </div>
+          )}
+
           <div className="mt-2 flex items-center gap-1 text-xs text-muted-foreground">
             <MapPin className="h-3.5 w-3.5" />
             {caseItem.location}
