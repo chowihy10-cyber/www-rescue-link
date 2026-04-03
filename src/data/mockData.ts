@@ -94,7 +94,7 @@ export const mockCases: CaseItem[] = [
     id: '1',
     title: '朝阳区受伤橘猫急需送医',
     animalType: '猫',
-    status: '等待送医',
+    status: '待送医',
     location: '北京市朝阳区望京SOHO附近',
     city: '北京',
     distance: '1.2km',
