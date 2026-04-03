@@ -1,14 +1,14 @@
 import { useNavigate } from 'react-router-dom';
 import MobileLayout from '@/components/MobileLayout';
 import { mockUser, mockCases } from '@/data/mockData';
-import { Search, MapPin, ChevronRight, AlertTriangle, SlidersHorizontal, PawPrint } from 'lucide-react';
+import { Search, MapPin, ChevronRight, AlertTriangle, SlidersHorizontal, PawPrint, Heart, Map, Package } from 'lucide-react';
 import CaseCard from '@/components/CaseCard';
 import { useState } from 'react';
 
 const channels = [
-  { label: '领养', path: '/channel/adoption' },
-  { label: '寻宠地图', path: '/lost-pet-map' },
-  { label: '小院补给', path: '/channel/shelter' },
+  { label: '领养', sub: '为它找一个家', path: '/channel/adoption', icon: Heart, bg: 'bg-emerald-50', iconColor: 'text-emerald-500', titleColor: 'text-emerald-700' },
+  { label: '寻宠地图', sub: '附近走失宠物', path: '/lost-pet-map', icon: Map, bg: 'bg-amber-50', iconColor: 'text-amber-500', titleColor: 'text-amber-700' },
+  { label: '小院补给', sub: '支持流浪小院', path: '/channel/shelter', icon: Package, bg: 'bg-orange-50', iconColor: 'text-orange-400', titleColor: 'text-orange-600' },
 ];
 
 const Index = () => {
