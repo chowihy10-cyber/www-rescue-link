@@ -47,6 +47,15 @@ const CaseDetail = () => {
             <span className="text-xs text-muted-foreground">{caseItem.animalType === '猫' ? '🐱' : '🐶'} {caseItem.animalType}</span>
           </div>
           <h1 className="mt-2 text-lg font-bold leading-snug text-foreground">{caseItem.title}</h1>
+
+          {/* Publisher Info */}
+          {publisher && (
+            <div className="mt-2.5 flex items-center justify-between rounded-lg bg-muted/60 px-3 py-2">
+              <PublisherBadge publisher={publisher} size="md" showStats />
+              <span className="shrink-0 text-[10px] text-primary">查看主页 →</span>
+            </div>
+          )}
+
           <div className="mt-2 flex items-center gap-1 text-xs text-muted-foreground">
             <MapPin className="h-3.5 w-3.5" />
             {caseItem.location}

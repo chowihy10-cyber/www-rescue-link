@@ -43,6 +43,7 @@ const App = () => (
           <Route path="/publish-lost-pet" element={<PublishLostPet />} />
           <Route path="/shop" element={<Shop />} />
           <Route path="/guide" element={<Guide />} />
+          <Route path="/publisher/:id" element={<PublisherProfile />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

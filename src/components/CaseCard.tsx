@@ -128,10 +128,15 @@ const CaseCard = ({ caseItem }: { caseItem: CaseItem }) => {
             </div>
           </div>
 
-          {/* Footer */}
-          <div className="mt-0.5 flex items-center justify-between text-[9px]">
-            <span className="text-muted-foreground">
-              {caseItem.updatedAt} · 需求单 {needsCount} 项
+          {/* Publisher + Footer */}
+          <div className="mt-0.5 flex items-center justify-between">
+            {publisher ? (
+              <PublisherBadge publisher={publisher} size="sm" />
+            ) : (
+              <span className="text-[9px] text-muted-foreground">{caseItem.updatedAt}</span>
+            )}
+            <span className="text-[9px] text-muted-foreground">
+              {caseItem.updatedAt}
             </span>
           </div>
         </div>
