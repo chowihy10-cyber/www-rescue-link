@@ -139,7 +139,7 @@ const PublisherProfile = () => {
             publisherCases.map((c) => <CaseCard key={c.id} caseItem={c} />)
           ) : (
             <div className="rounded-xl bg-card p-6 text-center text-xs text-muted-foreground shadow-sm">
-              暂无案例
+              暂无个案
             </div>
           )}
         </div>

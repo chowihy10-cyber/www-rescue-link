@@ -16,7 +16,7 @@ const Emergency = () => {
       </div>
       <div className="px-4 pb-6">
         {urgent.length ? urgent.map((c) => <CaseCard key={c.id} caseItem={c} />) : (
-          <p className="mt-10 text-center text-sm text-muted-foreground">暂无紧急案例</p>
+          <p className="mt-10 text-center text-sm text-muted-foreground">暂无紧急个案</p>
         )}
       </div>
     </MobileLayout>
