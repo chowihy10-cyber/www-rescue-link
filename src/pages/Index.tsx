@@ -30,7 +30,8 @@ const Index = () => {
 
   const hasAdvancedFilter = statusFilter !== '全部' || urgencyFilter !== '全部' || rangeFilter !== '全部' || sortBy !== '最新发布';
 
-  const filteredCases = mockCases.filter((c) => {
+  const allCasesData = getAllCases();
+  const filteredCases = allCasesData.filter((c) => {
     const animalMatch = animalFilter === '全部' ||
       (animalFilter === '猫' && c.animalType === '猫') ||
       (animalFilter === '狗' && c.animalType === '狗') ||
