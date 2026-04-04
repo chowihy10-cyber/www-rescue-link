@@ -91,6 +91,7 @@ const Index = () => {
         {/* A. Tool bar: search + bell (no location) */}
         <div className="mt-3 flex items-center gap-2">
           <div className="flex items-center gap-1 shrink-0 text-[13px] font-medium text-muted-foreground">
+            <Map className="h-3.5 w-3.5" />
             上海
           </div>
           <div className="flex flex-1 items-center gap-2 rounded-xl bg-card px-3.5 py-2.5 shadow-sm">
