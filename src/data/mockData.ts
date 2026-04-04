@@ -166,7 +166,7 @@ export const mockCases: CaseItem[] = [
     animalType: '狗',
     status: '待安置',
     location: '上海市浦东新区世纪公园附近',
-    city: '上海',
+    city: '浦东新区',
     distance: '3.8km',
     updatedAt: '1小时前',
     isUrgent: false,

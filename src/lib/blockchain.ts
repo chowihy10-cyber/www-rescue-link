@@ -30,7 +30,7 @@ const CONTRACT_ADDRESS: Hex =
   (import.meta.env.VITE_RESCUELINK_CONTRACT_ADDR as Hex) ??
   '0x0000000000000000000000000000000000000000'; // TODO: deploy & paste real address
 
-// ─── ABI (only what we need now) ─────────────────────────────────────
+// ─── ABI ─────────────────────────────────────────────────────────────
 export const RESCUELINK_ABI = [
   {
     name: 'createCase',
@@ -42,8 +42,18 @@ export const RESCUELINK_ABI = [
     ],
     outputs: [],
   },
+  {
+    name: 'addUpdate',
+    type: 'function',
+    stateMutability: 'nonpayable',
+    inputs: [
+      { name: 'caseId', type: 'bytes32' },
+      { name: 'updateHash', type: 'bytes32' },
+      { name: 'updateType', type: 'string' },
+    ],
+    outputs: [],
+  },
   // TODO: future functions
-  // addEvidence(bytes32 caseId, bytes32 evidenceHash, string evidenceType)
   // confirmService(bytes32 caseId, string serviceType, bytes32 receiptHash)
   // transferCase(bytes32 caseId, address newOwner)
   // redeemPoints(bytes32 redeemHash)
