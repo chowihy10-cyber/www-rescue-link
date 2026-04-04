@@ -4,6 +4,8 @@ import MobileLayout from '@/components/MobileLayout';
 import { ArrowLeft, CheckCircle2, Upload, X, Loader2 } from 'lucide-react';
 import { publishCase, type PublishCaseInput } from '@/lib/publishCase';
 import { toast } from 'sonner';
+import { useBlockchain } from '@/hooks/use-blockchain';
+import { Wallet, Network } from 'lucide-react';
 
 const needTags = ['送医', '检查', '治疗', '药品', '临时寄养', '运输', '物资', '寻找领养', '其他'];
 
@@ -12,6 +14,7 @@ const CreateCase = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [publishing, setPublishing] = useState(false);
   const [result, setResult] = useState<{ caseId: string; caseNo: number; txHash: string } | null>(null);
+  const { account, isCorrectNetwork, connect, switchNetwork, isConnecting } = useBlockchain();
 
   const [form, setForm] = useState({
     title: '',
@@ -263,11 +266,26 @@ const CreateCase = () => {
         <p className="mt-6 text-center text-[11px] text-muted-foreground">
           发布后将生成可持续更新的个案页，并在 Avalanche Fuji 测试网上链存证
         </p>
-        <button onClick={handlePublish} disabled={publishing}
-          className="mt-2 w-full rounded-xl bg-primary py-3.5 text-sm font-semibold text-primary-foreground transition-colors active:bg-primary/90 disabled:opacity-60 flex items-center justify-center gap-2">
-          {publishing && <Loader2 className="h-4 w-4 animate-spin" />}
-          {publishing ? '发布中…' : '发布个案'}
-        </button>
+
+        {!account ? (
+          <button onClick={connect} disabled={isConnecting}
+            className="mt-2 w-full rounded-xl bg-primary py-3.5 text-sm font-semibold text-primary-foreground transition-colors active:bg-primary/90 disabled:opacity-60 flex items-center justify-center gap-2">
+            {isConnecting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Wallet className="h-4 w-4" />}
+            {isConnecting ? '连接中…' : '连接钱包以发布'}
+          </button>
+        ) : !isCorrectNetwork ? (
+          <button onClick={switchNetwork}
+            className="mt-2 w-full rounded-xl bg-orange-500 py-3.5 text-sm font-semibold text-white transition-colors active:bg-orange-600 flex items-center justify-center gap-2">
+            <Network className="h-4 w-4" />
+            切换至 Avalanche Fuji
+          </button>
+        ) : (
+          <button onClick={handlePublish} disabled={publishing}
+            className="mt-2 w-full rounded-xl bg-primary py-3.5 text-sm font-semibold text-primary-foreground transition-colors active:bg-primary/90 disabled:opacity-60 flex items-center justify-center gap-2">
+            {publishing && <Loader2 className="h-4 w-4 animate-spin" />}
+            {publishing ? '发布中…' : '发布个案'}
+          </button>
+        )}
       </div>
     </MobileLayout>
   );

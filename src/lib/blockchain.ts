@@ -65,6 +65,45 @@ export const publicClient = createPublicClient({
   transport: http(RPC_URL),
 });
 
+// ─── Network Switching ───────────────────────────────────────────────
+
+export const FUJI_CHAIN_ID = 43113;
+export const FUJI_CHAIN_HEX = '0xa869';
+
+/** Switch to Avalanche Fuji or add it to the wallet */
+export async function switchNetwork() {
+  const ethereum = (window as any).ethereum;
+  if (!ethereum) return;
+
+  try {
+    await ethereum.request({
+      method: 'wallet_switchEthereumChain',
+      params: [{ chainId: FUJI_CHAIN_HEX }],
+    });
+  } catch (switchError: any) {
+    // 4902: chain not added to wallet
+    if (switchError.code === 4902) {
+      try {
+        await ethereum.request({
+          method: 'wallet_addEthereumChain',
+          params: [
+            {
+              chainId: FUJI_CHAIN_HEX,
+              chainName: 'Avalanche Fuji Testnet',
+              nativeCurrency: { name: 'AVAX', symbol: 'AVAX', decimals: 18 },
+              rpcUrls: [RPC_URL],
+              blockExplorerUrls: ['https://testnet.snowtrace.io/'],
+            },
+          ],
+        });
+      } catch (addError) {
+        console.error('Could not add Fuji network', addError);
+      }
+    }
+    console.error('Could not switch to Fuji network', switchError);
+  }
+}
+
 // ─── Helpers ─────────────────────────────────────────────────────────
 
 /** Deterministic caseId from a unique off-chain identifier */
@@ -125,6 +164,9 @@ export async function createCaseOnChain(
 
   await ethereum.request({ method: 'eth_requestAccounts' });
 
+  // Ensure correct network
+  await switchNetwork();
+
   const walletClient = createWalletClient({
     chain: avalancheFuji,
     transport: http(RPC_URL),
@@ -184,6 +226,9 @@ export async function addUpdateOnChain(
   }
 
   await ethereum.request({ method: 'eth_requestAccounts' });
+
+  // Ensure correct network
+  await switchNetwork();
 
   const data = encodeFunctionData({
     abi: RESCUELINK_ABI,

@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MobileLayout from '@/components/MobileLayout';
-import { ArrowLeft, CheckCircle2, Upload, Shield, Link2 } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Upload, Shield, Link2, Wallet, Network, Loader2 } from 'lucide-react';
+import { useBlockchain } from '@/hooks/use-blockchain';
 
 const evidenceTypes = ['医院单据', '服务完成记录', '物资照片', '交接确认', '阶段照片', '其他'];
 const relatedEvents = ['发现现场', '已完成基础安置', '已送至医院', '已完成首诊', '已完成交接', '其他'];
@@ -11,6 +12,7 @@ const AddRecord = () => {
   const [activeTab, setActiveTab] = useState<'progress' | 'evidence'>('progress');
   const [submitted, setSubmitted] = useState(false);
   const [evidenceSubmitted, setEvidenceSubmitted] = useState(false);
+  const { account, isCorrectNetwork, connect, switchNetwork, isConnecting } = useBlockchain();
 
   // Progress form
   const [progressTitle, setProgressTitle] = useState('');
@@ -134,12 +136,26 @@ const AddRecord = () => {
                 </div>
               </div>
             </div>
-            <button
-              onClick={() => setSubmitted(true)}
-              className="mt-6 w-full rounded-xl bg-primary py-3.5 text-sm font-semibold text-primary-foreground"
-            >
-              发布进展
-            </button>
+            {!account ? (
+              <button onClick={connect} disabled={isConnecting}
+                className="mt-6 w-full rounded-xl bg-primary py-3.5 text-sm font-semibold text-primary-foreground transition-colors active:bg-primary/90 disabled:opacity-60 flex items-center justify-center gap-2">
+                {isConnecting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Wallet className="h-4 w-4" />}
+                {isConnecting ? '连接中…' : '连接钱包以发布'}
+              </button>
+            ) : !isCorrectNetwork ? (
+              <button onClick={switchNetwork}
+                className="mt-6 w-full rounded-xl bg-orange-500 py-3.5 text-sm font-semibold text-white transition-colors active:bg-orange-600 flex items-center justify-center gap-2">
+                <Network className="h-4 w-4" />
+                切换至 Avalanche Fuji
+              </button>
+            ) : (
+              <button
+                onClick={() => setSubmitted(true)}
+                className="mt-6 w-full rounded-xl bg-primary py-3.5 text-sm font-semibold text-primary-foreground"
+              >
+                发布进展
+              </button>
+            )}
           </>
         ) : (
           <>
@@ -209,18 +225,32 @@ const AddRecord = () => {
               </div>
             </div>
 
-            <button
-              onClick={() => {
-                if (!relatedEvent) {
-                  return;
-                }
-                setEvidenceSubmitted(true);
-              }}
-              disabled={!relatedEvent}
-              className="mt-6 w-full rounded-xl bg-primary py-3.5 text-sm font-semibold text-primary-foreground disabled:opacity-50"
-            >
-              提交并存证
-            </button>
+            {!account ? (
+              <button onClick={connect} disabled={isConnecting}
+                className="mt-6 w-full rounded-xl bg-primary py-3.5 text-sm font-semibold text-primary-foreground transition-colors active:bg-primary/90 disabled:opacity-60 flex items-center justify-center gap-2">
+                {isConnecting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Wallet className="h-4 w-4" />}
+                {isConnecting ? '连接中…' : '连接钱包以发布'}
+              </button>
+            ) : !isCorrectNetwork ? (
+              <button onClick={switchNetwork}
+                className="mt-6 w-full rounded-xl bg-orange-500 py-3.5 text-sm font-semibold text-white transition-colors active:bg-orange-600 flex items-center justify-center gap-2">
+                <Network className="h-4 w-4" />
+                切换至 Avalanche Fuji
+              </button>
+            ) : (
+              <button
+                onClick={() => {
+                  if (!relatedEvent) {
+                    return;
+                  }
+                  setEvidenceSubmitted(true);
+                }}
+                disabled={!relatedEvent}
+                className="mt-6 w-full rounded-xl bg-primary py-3.5 text-sm font-semibold text-primary-foreground disabled:opacity-50"
+              >
+                提交并存证
+              </button>
+            )}
           </>
         )}
       </div>
