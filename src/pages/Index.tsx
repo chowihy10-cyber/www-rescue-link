@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import MobileLayout from '@/components/MobileLayout';
 import { mockUser, mockCases } from '@/data/mockData';
-import { Search, MapPin, Bell, Heart, Map, Package, ShoppingBag, SlidersHorizontal, X } from 'lucide-react';
+import { Search, MapPin, MessageCircle, Heart, Map, Package, ShoppingBag, SlidersHorizontal, X, Gift, ChevronRight } from 'lucide-react';
 import CaseCard from '@/components/CaseCard';
 import { useState } from 'react';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose } from '@/components/ui/drawer';
@@ -26,7 +26,7 @@ const Index = () => {
 
   const hasAdvancedFilter = statusFilter !== '全部' || urgencyFilter !== '全部' || rangeFilter !== '全部' || sortBy !== '最新发布';
 
-  const totalCases = mockCases.length;
+  const totalCases = mockCases.filter(c => c.status !== '已完成').length;
 
   const filteredCases = mockCases.filter((c) => {
     const animalMatch = animalFilter === '全部' ||
@@ -64,25 +64,23 @@ const Index = () => {
             <span className="text-[12px] text-muted-foreground">搜索案号、用户名、关键词…</span>
           </div>
           <button className="flex shrink-0 items-center justify-center rounded-xl bg-card p-2.5 shadow-sm">
-            <Bell className="h-4 w-4 text-muted-foreground" />
+            <MessageCircle className="h-4 w-4 text-muted-foreground" />
           </button>
         </div>
 
-        {/* B. Light status bar - left aligned with prominent numbers */}
-        <div className="mt-3 flex items-center gap-4 rounded-xl bg-card px-4 py-2.5 shadow-sm">
-          <div className="flex items-baseline gap-1">
-            <span className="text-[11px] text-muted-foreground">进行中</span>
+        {/* B. Light status bar - centered within each section */}
+        <div className="mt-3 grid grid-cols-3 rounded-xl bg-card px-3 py-2.5 shadow-sm">
+          <div className="flex flex-col items-center">
             <span className="text-[18px] font-bold leading-none text-foreground">{totalCases}</span>
+            <span className="mt-1 text-[11px] text-muted-foreground">进行中</span>
           </div>
-          <div className="h-4 w-px bg-border" />
-          <div className="flex items-baseline gap-1">
-            <span className="text-[11px] text-muted-foreground">待补记录</span>
+          <div className="flex flex-col items-center border-x border-border">
             <span className="text-[18px] font-bold leading-none text-foreground">3</span>
+            <span className="mt-1 text-[11px] text-muted-foreground">待补记录</span>
           </div>
-          <div className="h-4 w-px bg-border" />
-          <div className="flex items-baseline gap-1">
-            <span className="text-[11px] text-muted-foreground">助力值</span>
+          <div className="flex flex-col items-center">
             <span className="text-[18px] font-bold leading-none text-points">{mockUser.totalPoints}</span>
+            <span className="mt-1 text-[11px] text-muted-foreground">助力值</span>
           </div>
         </div>
 
@@ -103,7 +101,22 @@ const Index = () => {
           })}
         </div>
 
-        {/* D. Single filter row: animal type + filter icon */}
+        {/* D. Charity shop banner */}
+        <button
+          onClick={() => navigate('/shop')}
+          className="mt-3 flex w-full items-center gap-3 rounded-2xl bg-[hsl(30,50%,96%)] px-4 py-3 shadow-sm ring-1 ring-black/[0.04] transition-transform active:scale-[0.99]"
+        >
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[hsl(28,60%,90%)]">
+            <Gift className="h-5 w-5 text-[hsl(24,70%,45%)]" />
+          </div>
+          <div className="flex-1 text-left">
+            <p className="text-[14px] font-semibold text-[hsl(24,50%,30%)]">公益商城</p>
+            <p className="text-[12px] text-[hsl(24,30%,50%)]">买点有用的，也顺手帮到它们</p>
+          </div>
+          <ChevronRight className="h-4 w-4 shrink-0 text-[hsl(24,30%,65%)]" />
+        </button>
+
+        {/* E. Single filter row: animal type + filter icon */}
         <div className="mt-3 flex items-center gap-1.5">
           <div className="flex flex-1 gap-1.5 overflow-x-auto hide-scrollbar">
             {['全部', '猫', '狗', '其他'].map((f) => (
@@ -132,7 +145,7 @@ const Index = () => {
           </button>
         </div>
 
-        {/* E. Case feed */}
+        {/* F. Case feed */}
         <div className="mt-3 pb-4">
           <h2 className="mb-2 text-[15px] font-semibold text-foreground">推荐救助个案</h2>
           {allCases.map((c) => (
