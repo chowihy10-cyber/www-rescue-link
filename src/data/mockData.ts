@@ -396,12 +396,25 @@ export const mockShelterNeeds = [
 ];
 
 export const mockShopItems: ShopItem[] = [
-  { id: 'sh1', name: '它援定制帆布袋', price: '¥39', points: 15, image: '', category: '文创' },
-  { id: 'sh2', name: '流浪猫明信片套装', price: '¥25', points: 10, image: '', category: '文创' },
-  { id: 'sh3', name: '公益猫粮捐赠包', price: '¥49', points: 25, image: '', category: '公益' },
-  { id: 'sh4', name: '它援联名T恤', price: '¥89', points: 35, image: '', category: '文创' },
-  { id: 'sh5', name: '流浪动物日历', price: '¥35', points: 15, image: '', category: '文创' },
-  { id: 'sh6', name: '公益狗粮捐赠包', price: '¥59', points: 30, image: '', category: '公益' },
+  // 猫用品
+  { id: 'sh1', name: '皇家猫粮 2kg', price: '¥68', points: 20, image: '', category: '猫用品' },
+  { id: 'sh2', name: '猫砂 10L 豆腐砂', price: '¥35', points: 10, image: '', category: '猫用品' },
+  { id: 'sh3', name: '猫罐头 6连罐', price: '¥45', points: 15, image: '', category: '猫用品' },
+  { id: 'sh4', name: '猫抓板 瓦楞纸', price: '¥19', points: 8, image: '', category: '猫用品' },
+  // 狗用品
+  { id: 'sh5', name: '狗粮 5kg 通用型', price: '¥89', points: 25, image: '', category: '狗用品' },
+  { id: 'sh6', name: '牵引绳 可伸缩', price: '¥29', points: 10, image: '', category: '狗用品' },
+  { id: 'sh7', name: '狗零食 鸡肉干', price: '¥25', points: 8, image: '', category: '狗用品' },
+  { id: 'sh8', name: '狗窝 保暖垫 M码', price: '¥59', points: 18, image: '', category: '狗用品' },
+  // 医疗
+  { id: 'sh9', name: '体外驱虫滴剂 3支', price: '¥55', points: 15, image: '', category: '医疗' },
+  { id: 'sh10', name: '宠物急救包', price: '¥39', points: 12, image: '', category: '医疗' },
+  { id: 'sh11', name: '术后恢复营养膏', price: '¥32', points: 10, image: '', category: '医疗' },
+  // 文创
+  { id: 'sh12', name: '它援定制帆布袋', price: '¥39', points: 15, image: '', category: '文创' },
+  { id: 'sh13', name: '流浪猫明信片套装', price: '¥25', points: 10, image: '', category: '文创' },
+  { id: 'sh14', name: '它援联名T恤', price: '¥89', points: 35, image: '', category: '文创' },
+  { id: 'sh15', name: '流浪动物日历', price: '¥35', points: 15, image: '', category: '文创' },
 ];
 
 export const mockGuides: GuideItem[] = [
