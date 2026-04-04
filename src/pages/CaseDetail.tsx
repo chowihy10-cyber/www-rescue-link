@@ -98,7 +98,6 @@ const CaseDetail = () => {
   const needsLong = helpNeeds.length > 3;
   const visibleNeeds = helpNeeds.slice(0, 3);
   const hiddenNeeds = helpNeeds.slice(3);
-  const [needsExpanded, setNeedsExpanded] = useState(false);
 
   return (
     <MobileLayout hideTabBar>
