@@ -7,12 +7,12 @@ export function useBlockchain() {
   const [isConnecting, setIsConnecting] = useState(false);
 
   useEffect(() => {
-    const ethereum = (window as any).ethereum;
+    const ethereum = window.ethereum;
     if (!ethereum) return;
 
     // Get initial values
     ethereum.request({ method: 'eth_accounts' }).then((accounts: string[]) => {
-      if (accounts.length > 0) setAccount(accounts[0]);
+      if (accounts && accounts.length > 0) setAccount(accounts[0]);
     });
 
     ethereum.request({ method: 'eth_chainId' }).then((id: string) => {
@@ -21,7 +21,7 @@ export function useBlockchain() {
 
     // Listen for changes
     const handleAccountsChanged = (accounts: string[]) => {
-      setAccount(accounts.length > 0 ? accounts[0] : null);
+      setAccount(accounts && accounts.length > 0 ? accounts[0] : null);
     };
 
     const handleChainChanged = (id: string) => {
@@ -38,7 +38,7 @@ export function useBlockchain() {
   }, []);
 
   const connect = async () => {
-    const ethereum = (window as any).ethereum;
+    const ethereum = window.ethereum;
     if (!ethereum) {
       alert('请安装钱包，如 MetaMask');
       return;
@@ -47,8 +47,10 @@ export function useBlockchain() {
     setIsConnecting(true);
     try {
       const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-      setAccount(accounts[0]);
-      await switchNetwork();
+      if (accounts && accounts.length > 0) {
+        setAccount(accounts[0]);
+        await switchNetwork();
+      }
     } catch (err) {
       console.error('Failed to connect wallet', err);
     } finally {
@@ -56,7 +58,7 @@ export function useBlockchain() {
     }
   };
 
-  const isCorrectNetwork = chainId === FUJI_CHAIN_HEX;
+  const isCorrectNetwork = chainId?.toLowerCase() === FUJI_CHAIN_HEX.toLowerCase();
 
   return {
     account,

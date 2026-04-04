@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MobileLayout from '@/components/MobileLayout';
-import { ArrowLeft, CheckCircle2, Upload, Shield } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Upload, Shield, Wallet, Network, Loader2 } from 'lucide-react';
+import { useBlockchain } from '@/hooks/use-blockchain';
 
 const UploadEvidence = () => {
   const navigate = useNavigate();
   const [submitted, setSubmitted] = useState(false);
   const [recordType, setRecordType] = useState('收到物资照片');
   const [note, setNote] = useState('');
+  const { account, isCorrectNetwork, connect, switchNetwork, isConnecting } = useBlockchain();
 
   if (submitted) {
     return (
@@ -87,12 +89,26 @@ const UploadEvidence = () => {
           </div>
         </div>
 
-        <button
-          onClick={() => setSubmitted(true)}
-          className="mt-6 w-full rounded-xl bg-primary py-3.5 text-sm font-semibold text-primary-foreground"
-        >
-          提交凭证
-        </button>
+        {!account ? (
+          <button onClick={connect} disabled={isConnecting}
+            className="mt-6 w-full rounded-xl bg-primary py-3.5 text-sm font-semibold text-primary-foreground transition-colors active:bg-primary/90 disabled:opacity-60 flex items-center justify-center gap-2">
+            {isConnecting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Wallet className="h-4 w-4" />}
+            {isConnecting ? '连接中…' : '连接钱包以发布'}
+          </button>
+        ) : !isCorrectNetwork ? (
+          <button onClick={switchNetwork}
+            className="mt-6 w-full rounded-xl bg-orange-500 py-3.5 text-sm font-semibold text-white transition-colors active:bg-orange-600 flex items-center justify-center gap-2">
+            <Network className="h-4 w-4" />
+            切换至 Avalanche Fuji
+          </button>
+        ) : (
+          <button
+            onClick={() => setSubmitted(true)}
+            className="mt-6 w-full rounded-xl bg-primary py-3.5 text-sm font-semibold text-primary-foreground"
+          >
+            提交凭证
+          </button>
+        )}
       </div>
     </MobileLayout>
   );

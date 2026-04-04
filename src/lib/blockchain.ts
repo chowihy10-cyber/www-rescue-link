@@ -13,6 +13,7 @@ import {
   createPublicClient,
   createWalletClient,
   http,
+  custom,
   encodeFunctionData,
   keccak256,
   toBytes,
@@ -21,14 +22,13 @@ import {
 import { avalancheFuji } from 'viem/chains';
 
 // ─── Config ──────────────────────────────────────────────────────────
-// TODO: Replace with real values or set via Vercel env vars
 const RPC_URL =
-  import.meta.env.VITE_AVALANCHE_FUJI_RPC_URL ??
+  import.meta.env.VITE_AVALANCHE_FUJI_RPC_URL ||
   'https://api.avax-test.network/ext/bc/C/rpc';
 
 const CONTRACT_ADDRESS: Hex =
-  (import.meta.env.VITE_RESCUELINK_CONTRACT_ADDR as Hex) ??
-  '0x0000000000000000000000000000000000000000'; // TODO: deploy & paste real address
+  (import.meta.env.VITE_RESCUELINK_CONTRACT_ADDR as Hex) ||
+  '0x0000000000000000000000000000000000000000';
 
 // ─── ABI ─────────────────────────────────────────────────────────────
 export const RESCUELINK_ABI = [
@@ -72,7 +72,7 @@ export const FUJI_CHAIN_HEX = '0xa869';
 
 /** Switch to Avalanche Fuji or add it to the wallet */
 export async function switchNetwork() {
-  const ethereum = (window as any).ethereum;
+  const ethereum = window.ethereum;
   if (!ethereum) return;
 
   try {
@@ -141,63 +141,71 @@ export async function createCaseOnChain(
   caseIdBytes32: Hex,
   metaHashBytes32: Hex,
 ): Promise<CreateCaseOnChainResult> {
-  // If contract address is zero (not deployed), return mock tx
-  if (CONTRACT_ADDRESS === '0x0000000000000000000000000000000000000000') {
-    console.warn('[blockchain] Contract not deployed – returning mock tx hash');
-    const mockTx = keccak256(
-      toBytes(`mock-tx-${caseIdBytes32}-${Date.now()}`),
-    );
+  console.log('─── [Blockchain Debug: createCaseOnChain] ───');
+  console.log('1. Contract Address from .env:', CONTRACT_ADDRESS);
+  console.log('2. Parameters:', { caseIdBytes32, metaHashBytes32 });
+
+  // Check if contract is correctly loaded from .env
+  if (!CONTRACT_ADDRESS || CONTRACT_ADDRESS === '0x0000000000000000000000000000000000000000') {
+    console.error('[blockchain] Error: Contract address is not set in .env or is zero address');
+    throw new Error('合约地址未配置，请检查 .env 文件并重启 Vite 服务（npm run dev）');
+  }
+
+  const ethereum = window.ethereum;
+  if (!ethereum) {
+    console.error('[blockchain] Error: No wallet detected');
+    throw new Error('未检测到钱包，请安装 MetaMask 或其他钱包');
+  }
+
+  // Ensure correct network
+  console.log('3. Switching/Checking Network (Target: 43113)...');
+  await switchNetwork();
+
+  // 1. Get user accounts
+  const accounts = await ethereum.request({ method: 'eth_requestAccounts' }) as string[];
+  const account = accounts[0] as Hex;
+  const currentChainId = await ethereum.request({ method: 'eth_chainId' });
+  console.log('4. Current Wallet State:', { account, currentChainId });
+
+  // 2. Setup wallet client with viem
+  const walletClient = createWalletClient({
+    account,
+    chain: avalancheFuji,
+    transport: custom(ethereum),
+  });
+
+  // 3. Send transaction using writeContract
+  try {
+    console.log('5. Executing writeContract: createCase...');
+    const txHash = await walletClient.writeContract({
+      address: CONTRACT_ADDRESS,
+      abi: RESCUELINK_ABI,
+      functionName: 'createCase',
+      args: [caseIdBytes32, metaHashBytes32],
+    });
+
+    console.log('6. writeContract Success! TxHash:', txHash);
     return {
-      txHash: mockTx,
+      txHash,
       caseIdBytes32,
       metaHashBytes32,
     };
+  } catch (error: any) {
+    console.error('❌ [blockchain] writeContract Failed!');
+    console.error('Error Message:', error.message);
+    console.error('Error Object:', error);
+    
+    // Check for common revert reasons
+    if (error.message.includes('user rejected')) {
+      throw new Error('用户取消了签名交易');
+    } else if (error.message.includes('insufficient funds')) {
+      throw new Error('账户余额不足以支付 Gas 费用（请在 Fuji Faucet 领取测试币）');
+    } else if (error.message.includes('revert')) {
+      throw new Error(`合约执行回退 (Revert): ${error.shortMessage || '请检查合约逻辑或参数'}`);
+    }
+    
+    throw error;
   }
-
-  // Try browser wallet (window.ethereum)
-  const ethereum = (window as any).ethereum;
-  if (!ethereum) {
-    throw new Error(
-      'No wallet detected. Install MetaMask or another Avalanche-compatible wallet.',
-    );
-  }
-
-  await ethereum.request({ method: 'eth_requestAccounts' });
-
-  // Ensure correct network
-  await switchNetwork();
-
-  const walletClient = createWalletClient({
-    chain: avalancheFuji,
-    transport: http(RPC_URL),
-  });
-
-  // Encode call data
-  const data = encodeFunctionData({
-    abi: RESCUELINK_ABI,
-    functionName: 'createCase',
-    args: [caseIdBytes32, metaHashBytes32],
-  });
-
-  const [account] = await ethereum.request({ method: 'eth_accounts' }) as string[];
-
-  const txHash = await ethereum.request({
-    method: 'eth_sendTransaction',
-    params: [
-      {
-        from: account,
-        to: CONTRACT_ADDRESS,
-        data,
-        chainId: '0xa869', // 43113
-      },
-    ],
-  });
-
-  return {
-    txHash: txHash as string,
-    caseIdBytes32,
-    metaHashBytes32,
-  };
 }
 
 // ─── addUpdate on-chain ──────────────────────────────────────────────
@@ -214,34 +222,32 @@ export async function addUpdateOnChain(
   updateHashBytes32: Hex,
   updateType: string,
 ): Promise<AddUpdateOnChainResult> {
-  if (CONTRACT_ADDRESS === '0x0000000000000000000000000000000000000000') {
-    console.warn('[blockchain] Contract not deployed – returning mock update tx');
-    const mockTx = keccak256(toBytes(`mock-update-${caseIdBytes32}-${Date.now()}`));
-    return { txHash: mockTx };
+  if (!CONTRACT_ADDRESS || CONTRACT_ADDRESS === '0x0000000000000000000000000000000000000000') {
+    throw new Error('合约地址未配置，请检查 .env 文件并重启服务');
   }
 
-  const ethereum = (window as any).ethereum;
+  const ethereum = window.ethereum;
   if (!ethereum) {
-    throw new Error('No wallet detected.');
+    throw new Error('未检测到钱包');
   }
-
-  await ethereum.request({ method: 'eth_requestAccounts' });
 
   // Ensure correct network
   await switchNetwork();
 
-  const data = encodeFunctionData({
+  const [account] = await ethereum.request({ method: 'eth_requestAccounts' }) as string[];
+
+  const walletClient = createWalletClient({
+    account: account as Hex,
+    chain: avalancheFuji,
+    transport: custom(ethereum),
+  });
+
+  const txHash = await walletClient.writeContract({
+    address: CONTRACT_ADDRESS,
     abi: RESCUELINK_ABI,
     functionName: 'addUpdate',
     args: [caseIdBytes32, updateHashBytes32, updateType],
   });
 
-  const [account] = await ethereum.request({ method: 'eth_accounts' }) as string[];
-
-  const txHash = await ethereum.request({
-    method: 'eth_sendTransaction',
-    params: [{ from: account, to: CONTRACT_ADDRESS, data, chainId: '0xa869' }],
-  });
-
-  return { txHash: txHash as string };
+  return { txHash };
 }
