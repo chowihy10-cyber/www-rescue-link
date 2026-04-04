@@ -328,10 +328,10 @@ export const mockSpottedPets: SpottedPet[] = [
 ];
 
 export const mockClues: LostPetClue[] = [
-  { id: 'c1', petId: 'l1', photo: '', time: '2026-04-02 15:30', location: '海淀区五道口地铁站附近', lat: 39.992, lng: 116.338, note: '看到一只橘猫在垃圾桶旁边觅食，脖子好像有项圈', status: '已采纳', submitter: '热心市民A', points: 15 },
-  { id: 'c2', petId: 'l1', photo: '', time: '2026-04-03 08:15', location: '海淀区清华东路', lat: 39.998, lng: 116.332, note: '早上遛弯看到一只橘猫从绿化带跑过', status: '待确认', submitter: '热心市民B', points: 10 },
-  { id: 'c3', petId: 'l1', photo: '', time: '2026-04-03 11:40', location: '海淀区学院路', lat: 39.988, lng: 116.350, note: '在小区门口发现疑似走失橘猫，已拍照', status: '待确认', submitter: '热心市民C', points: 10 },
-  { id: 'c4', petId: 'l2', photo: '', time: '2026-04-01 19:00', location: '徐汇区复兴西路', lat: 31.210, lng: 121.440, note: '看到一只白色小狗在路边徘徊', status: '已采纳', submitter: '热心市民D', points: 15 },
+  { id: 'c1', petId: 'l1', photo: '', time: '2026-04-02 15:30', location: '徐汇区衡山路地铁站附近', lat: 31.214, lng: 121.448, note: '看到一只白色比熊在路边徘徊', status: '已采纳', submitter: '热心市民A', points: 15 },
+  { id: 'c2', petId: 'l1', photo: '', time: '2026-04-03 08:15', location: '徐汇区复兴西路', lat: 31.210, lng: 121.440, note: '早上遛弯看到一只白色小狗从绿化带跑过', status: '待确认', submitter: '热心市民B', points: 10 },
+  { id: 'c3', petId: 'l2', photo: '', time: '2026-04-03 11:40', location: '浦东新区世纪公园东门', lat: 31.218, lng: 121.544, note: '看到一只黄色中型犬戴红色项圈，在草坪上', status: '待确认', submitter: '热心市民C', points: 10 },
+  { id: 'c4', petId: 'l3', photo: '', time: '2026-04-01 19:00', location: '静安区南京西路', lat: 31.229, lng: 121.450, note: '看到一只棕色泰迪穿蓝色衣服在商场附近', status: '已采纳', submitter: '热心市民D', points: 15 },
 ];
 
 export const mockAdoptions = [
