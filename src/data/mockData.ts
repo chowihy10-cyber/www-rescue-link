@@ -16,7 +16,6 @@ export interface CaseItem {
   helpType: 'emergency' | 'supply' | 'foster' | 'adopt' | 'lost';
   urgentNeed?: string;
   needs: NeedItem[];
-  collaborationNeeds: CollaborationNeedItem[];
   timeline: TimelineItem[];
   evidences: EvidenceItem[];
 }
@@ -24,16 +23,9 @@ export interface CaseItem {
 export interface NeedItem {
   id: string;
   name: string;
-  description?: string;
   points: number;
   fulfilled: boolean;
-}
-
-export interface CollaborationNeedItem {
-  id: string;
-  name: string;
-  description?: string;
-  fulfilled: boolean;
+  claimedBy?: string;
 }
 
 export interface TimelineItem {
@@ -111,27 +103,24 @@ export const mockCases: CaseItem[] = [
     earnedPoints: 320,
     isUrgent: true,
     image: '',
-    description: '在望京SOHO停车场发现一只受伤的橘猫，右前腿疑似骨折，精神较差，需要尽快送医治疗。发起人已完成基础临时安置，并正在协调后续送医处理。',
+    description: '在望京SOHO停车场发现一只受伤的橘猫，右前腿疑似骨折，精神萎靡，需要尽快送医治疗。目前暂时安置在纸箱中，有志愿者在现场看护。',
     contact: '微信：rescue_bj_001',
     helpType: 'emergency',
-    urgentNeed: '紧急',
+    urgentNeed: '急需送医',
     needs: [
-      { id: 'n1', name: '首诊检查费用', description: '预计用于首诊、拍片与基础处理', points: 200, fulfilled: false },
-      { id: 'n2', name: '外出航空箱', description: '用于安全转运与后续就诊', points: 80, fulfilled: false },
-      { id: 'n3', name: '术后营养罐头', description: '术后恢复期营养补充', points: 60, fulfilled: true },
-    ],
-    collaborationNeeds: [
-      { id: 'cn1', name: '协助送往医院', description: '希望尽快将动物送至附近可接诊医院', fulfilled: false },
-      { id: 'cn2', name: '短期安置', description: '如今晚无法完成治疗，需1–3天临时照护', fulfilled: false },
+      { id: 'n1', name: '紧急送医', points: 200, fulfilled: false },
+      { id: 'n2', name: '医疗费用', points: 150, fulfilled: false },
+      { id: 'n3', name: '术后猫粮', points: 80, fulfilled: true, claimedBy: '爱心用户A' },
+      { id: 'n4', name: '恢复期寄养', points: 70, fulfilled: false },
     ],
     timeline: [
-      { date: '2026-04-03 15:00', content: '已创建个案记录', type: 'milestone' },
-      { date: '2026-04-03 15:15', content: '已补充现场情况', type: 'update' },
-      { date: '2026-04-03 15:30', content: '已完成基础安置', type: 'update' },
+      { date: '2026-04-03 14:30', content: '发现受伤橘猫，拍照记录现场情况', type: 'milestone' },
+      { date: '2026-04-03 14:45', content: '志愿者到达现场，提供临时安置', type: 'update' },
+      { date: '2026-04-03 15:00', content: '发布救助信息，等待送医资源', type: 'update' },
     ],
     evidences: [
       { id: 'e1', type: '现场照片', uploadedAt: '2026-04-03 14:32', confirmed: true, chainStatus: 'stored', chainHash: '0xab3f...7e2d', chainId: 'AVX-2026-0403-001' },
-      { id: 'e2', type: '现场情况记录', uploadedAt: '2026-04-03 14:48', confirmed: true, chainStatus: 'pending' },
+      { id: 'e2', type: '志愿者到场记录', uploadedAt: '2026-04-03 14:48', confirmed: true, chainStatus: 'pending' },
     ],
   },
   {
@@ -151,18 +140,16 @@ export const mockCases: CaseItem[] = [
     contact: '微信：rescue_sh_002',
     helpType: 'foster',
     needs: [
-      { id: 'n5', name: '狗粮（幼犬）', description: '3周龄幼犬专用粮', points: 120, fulfilled: false },
-      { id: 'n6', name: '驱虫药', description: '幼犬体内外驱虫', points: 80, fulfilled: true },
-      { id: 'n8', name: '基础体检', description: '狗妈妈和幼崽健康检查', points: 200, fulfilled: false },
-      { id: 'n9', name: '保暖垫子', description: '幼崽保暖用', points: 100, fulfilled: true },
-    ],
-    collaborationNeeds: [
-      { id: 'cn3', name: '寄养家庭', description: '需要有经验的临时寄养家庭接手照顾', fulfilled: false },
+      { id: 'n5', name: '狗粮（幼犬）', points: 120, fulfilled: false },
+      { id: 'n6', name: '驱虫药', points: 80, fulfilled: true, claimedBy: '爱心用户B' },
+      { id: 'n7', name: '寄养家庭', points: 300, fulfilled: false },
+      { id: 'n8', name: '基础体检', points: 200, fulfilled: false },
+      { id: 'n9', name: '保暖垫子', points: 100, fulfilled: true, claimedBy: '爱心用户C' },
     ],
     timeline: [
-      { date: '2026-04-02 09:00', content: '已创建个案记录', type: 'milestone' },
-      { date: '2026-04-02 11:00', content: '已确认狗妈妈绝育状态', type: 'update' },
-      { date: '2026-04-03 08:00', content: '驱虫药已完成', type: 'update' },
+      { date: '2026-04-02 09:00', content: '发现狗妈妈和幼崽', type: 'milestone' },
+      { date: '2026-04-02 11:00', content: '确认狗妈妈已绝育', type: 'update' },
+      { date: '2026-04-03 08:00', content: '驱虫药已认领', type: 'update' },
     ],
     evidences: [
       { id: 'e3', type: '现场照片', uploadedAt: '2026-04-02 09:05', confirmed: true, chainStatus: 'stored', chainHash: '0xcd5e...9a1b', chainId: 'AVX-2026-0402-003' },
@@ -185,17 +172,15 @@ export const mockCases: CaseItem[] = [
     contact: '微信：tnr_gz_012',
     helpType: 'supply',
     needs: [
-      { id: 'n10', name: '绝育名额 x3', description: '剩余3只社区猫待绝育', points: 450, fulfilled: false },
-      { id: 'n11', name: '术后护理用品', description: '术后恢复所需药品与耗材', points: 150, fulfilled: false },
-      { id: 'n12', name: '猫粮补给', description: '社区猫日常喂养', points: 200, fulfilled: true },
-      { id: 'n14', name: '运输笼具', description: '用于安全捕捉和转运', points: 80, fulfilled: true },
-    ],
-    collaborationNeeds: [
-      { id: 'cn4', name: '协助捕捉', description: '需要人手协助安全捕捉剩余社区猫', fulfilled: false },
+      { id: 'n10', name: '绝育名额 x3', points: 450, fulfilled: false },
+      { id: 'n11', name: '术后护理用品', points: 150, fulfilled: false },
+      { id: 'n12', name: '猫粮补给', points: 200, fulfilled: true, claimedBy: '爱心用户D' },
+      { id: 'n13', name: '志愿者协助', points: 100, fulfilled: true, claimedBy: '爱心用户E' },
+      { id: 'n14', name: '运输笼具', points: 80, fulfilled: true, claimedBy: '爱心用户F' },
     ],
     timeline: [
-      { date: '2026-03-28', content: '已创建个案记录', type: 'milestone' },
-      { date: '2026-04-01', content: '已完成前5只绝育手术', type: 'milestone' },
+      { date: '2026-03-28', content: '第12期TNR计划启动', type: 'milestone' },
+      { date: '2026-04-01', content: '完成前5只绝育手术', type: 'milestone' },
       { date: '2026-04-03', content: '猫粮和笼具已到位', type: 'update' },
     ],
     evidences: [
@@ -221,16 +206,14 @@ export const mockCases: CaseItem[] = [
     contact: '微信：adopt_cd_004',
     helpType: 'adopt',
     needs: [
-      { id: 'n15', name: '领养审核', description: '等待合适领养人通过审核', points: 50, fulfilled: false },
-      { id: 'n17', name: '狗粮', description: '过渡期日常喂养', points: 100, fulfilled: true },
-    ],
-    collaborationNeeds: [
-      { id: 'cn5', name: '寄养过渡', description: '领养前需要临时照护', fulfilled: true },
+      { id: 'n15', name: '领养审核', points: 50, fulfilled: false },
+      { id: 'n16', name: '寄养过渡', points: 150, fulfilled: true, claimedBy: '爱心用户G' },
+      { id: 'n17', name: '狗粮', points: 100, fulfilled: true, claimedBy: '爱心用户H' },
     ],
     timeline: [
-      { date: '2026-03-30', content: '已创建个案记录', type: 'milestone' },
-      { date: '2026-04-01', content: '已完成体检和疫苗接种', type: 'milestone' },
-      { date: '2026-04-02', content: '已发布领养信息', type: 'update' },
+      { date: '2026-03-30', content: '发现被弃养泰迪', type: 'milestone' },
+      { date: '2026-04-01', content: '完成体检和疫苗接种', type: 'milestone' },
+      { date: '2026-04-02', content: '发布领养信息', type: 'update' },
     ],
     evidences: [
       { id: 'e7', type: '体检报告', uploadedAt: '2026-04-01 14:00', confirmed: true, chainStatus: 'stored', chainHash: '0xaaaa...bbbb', chainId: 'AVX-2026-0401-010' },
@@ -252,18 +235,17 @@ export const mockCases: CaseItem[] = [
     description: '高速路边发现一只受伤的中型犬，后腿有明显外伤，已送至宠物医院。目前正在治疗中，需要医疗费用和术后护理支持。',
     contact: '微信：rescue_sz_005',
     helpType: 'emergency',
-    urgentNeed: '紧急',
+    urgentNeed: '急需接力',
     needs: [
-      { id: 'n18', name: '手术费用', description: '后腿外伤手术治疗', points: 300, fulfilled: false },
-      { id: 'n19', name: '住院护理', description: '术后住院观察与护理', points: 150, fulfilled: false },
-      { id: 'n20', name: '术后药品', description: '消炎、止痛等必要药物', points: 80, fulfilled: false },
-      { id: 'n21', name: '康复期狗粮', description: '术后恢复期营养补充', points: 70, fulfilled: false },
+      { id: 'n18', name: '手术费用', points: 300, fulfilled: false },
+      { id: 'n19', name: '住院护理', points: 150, fulfilled: false },
+      { id: 'n20', name: '术后药品', points: 80, fulfilled: false },
+      { id: 'n21', name: '康复期狗粮', points: 70, fulfilled: false },
     ],
-    collaborationNeeds: [],
     timeline: [
-      { date: '2026-04-03 10:00', content: '已创建个案记录', type: 'milestone' },
-      { date: '2026-04-03 11:30', content: '已完成救出并送医', type: 'milestone' },
-      { date: '2026-04-03 13:00', content: '已开始手术治疗', type: 'update' },
+      { date: '2026-04-03 10:00', content: '在高速路边发现受伤流浪犬', type: 'milestone' },
+      { date: '2026-04-03 11:30', content: '成功救出并送医', type: 'milestone' },
+      { date: '2026-04-03 13:00', content: '开始手术治疗', type: 'update' },
     ],
     evidences: [
       { id: 'e8', type: '医院收治记录', uploadedAt: '2026-04-03 11:35', confirmed: true, chainStatus: 'pending' },
@@ -293,7 +275,7 @@ export const mockAdoptions = [
 export const mockShelterNeeds = [
   { id: 's1', shelter: '朝阳流浪猫救助小院', location: '北京', needs: ['猫粮 50斤', '猫砂 20袋', '驱虫药 30支'], points: 400, urgency: '日常' },
   { id: 's2', shelter: '浦东爱心狗狗之家', location: '上海', needs: ['狗粮 80斤', '笼子 5个', '垫子 10个'], points: 600, urgency: '紧缺' },
-  { id: 's3', shelter: '天河社区猫TNR基地', location: '广州', needs: ['绝育名额 10个', '术后恢复用品'], points: 800, urgency: '日常' },
+  { id: 's3', shelter: '天河社区猫TNR基地', location: '广州', needs: ['绝育名额 10个', '术后恢复用品', '志愿者'], points: 800, urgency: '日常' },
 ];
 
 export const mockShopItems: ShopItem[] = [
@@ -320,6 +302,7 @@ export const helpActions = [
   { id: 'h4', name: '逛逛公益商城', desc: '购买公益商品获得积分', points: 15, icon: '🛍️', daily: true },
   { id: 'h5', name: '提供寄养线索', desc: '知道可以寄养的家庭？告诉我们', points: 15, icon: '🏠', daily: false },
   { id: 'h6', name: '提供领养线索', desc: '帮助流浪动物找到新家', points: 15, icon: '💛', daily: false },
+  { id: 'h7', name: '志愿协助', desc: '参与现场救助或运输', points: 30, icon: '🤝', daily: false },
   { id: 'h8', name: '上传可信凭证', desc: '为案例补充真实记录', points: 10, icon: '📋', daily: true },
 ];
 

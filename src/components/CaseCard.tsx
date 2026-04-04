@@ -26,8 +26,8 @@ const CaseCard = ({ caseItem }: { caseItem: CaseItem }) => {
     .replace(/棠下村/, '天河区')
     .replace(/北京市/, '').replace(/上海市/, '').replace(/广州市/, '').replace(/成都市/, '').replace(/深圳市/, '');
 
-  // Only show collaboration needs as tags (not duplicating status/urgency)
-  const needTags = caseItem.needs.filter((n) => !n.fulfilled).map((n) => n.name).slice(0, 2);
+  // Need tags (unfulfilled)
+  const needTags = caseItem.needs.filter((n) => !n.fulfilled).map((n) => n.name).slice(0, 3);
   const updateCount = caseItem.timeline.length;
   const evidenceCount = caseItem.evidences.length;
 
@@ -44,20 +44,20 @@ const CaseCard = ({ caseItem }: { caseItem: CaseItem }) => {
       >
         {/* Left: Photo */}
         <div className="relative w-[30%] shrink-0 overflow-hidden">
-          <img src={imgSrc} alt={caseItem.title} loading="lazy" className="h-full w-full object-cover" style={{ minHeight: '140px' }} />
+          <img src={imgSrc} alt={caseItem.title} loading="lazy" className="h-full w-full object-cover" style={{ minHeight: '160px' }} />
         </div>
 
         {/* Right: Info */}
         <div className="flex w-[70%] flex-col justify-between p-3">
-          {/* Row 1: Tags — Urgency (red) + Status (accent) + Animal type + Star */}
+          {/* Row 1: Case # + Urgency + Status + Animal + Star */}
           <div className="flex items-center justify-between">
             <div className="flex flex-wrap items-center gap-1.5">
-              <span className="text-[11px] text-muted-foreground">#{formattedNo}</span>
+              <span className="text-[12px] font-medium text-muted-foreground">#{formattedNo}</span>
               {caseItem.isUrgent && (
-                <span className="rounded-md bg-urgent px-1.5 py-0.5 text-[10px] font-bold text-urgent-foreground">紧急</span>
+                <span className="rounded-md bg-urgent px-1.5 py-0.5 text-[11px] font-bold text-urgent-foreground">紧急</span>
               )}
-              <span className="rounded-md bg-accent/15 px-1.5 py-0.5 text-[10px] font-medium text-accent-foreground">{caseItem.status}</span>
-              <span className="rounded-md bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground">
+              <span className="rounded-md bg-accent/15 px-1.5 py-0.5 text-[11px] font-medium text-accent-foreground">{caseItem.status}</span>
+              <span className="rounded-md bg-muted px-1.5 py-0.5 text-[11px] text-muted-foreground">
                 {caseItem.animalType === '猫' ? '🐱' : '🐶'} {caseItem.animalType}
               </span>
             </div>
@@ -67,12 +67,12 @@ const CaseCard = ({ caseItem }: { caseItem: CaseItem }) => {
           </div>
 
           {/* Row 2: Title */}
-          <h3 className="mt-1.5 line-clamp-1 text-[14px] font-bold leading-snug text-foreground">{caseItem.title}</h3>
+          <h3 className="mt-1 line-clamp-1 text-[15px] font-bold leading-snug text-foreground">{caseItem.title}</h3>
 
           {/* Row 3: Summary */}
-          <p className="mt-0.5 line-clamp-1 text-[11px] text-muted-foreground/80">{caseItem.description.slice(0, 50)}</p>
+          <p className="mt-0.5 line-clamp-1 text-[12px] text-muted-foreground">{caseItem.description.slice(0, 50)}</p>
 
-          {/* Row 4: Need tags — only concrete items, not duplicating urgency/status */}
+          {/* Row 4: Need tags */}
           {needTags.length > 0 && (
             <div className="mt-1.5 flex flex-wrap gap-1">
               {needTags.map((tag) => (
@@ -81,21 +81,23 @@ const CaseCard = ({ caseItem }: { caseItem: CaseItem }) => {
             </div>
           )}
 
-          {/* Row 5: Meta info */}
-          <div className="mt-1.5 flex items-center gap-1.5 text-[10px] text-muted-foreground/70">
-            <span>更新{updateCount}次</span>
+          {/* Row 5: Record info */}
+          <div className="mt-1.5 flex items-center gap-2 text-[11px] text-muted-foreground">
+            <span>已更新 {updateCount} 次</span>
             <span>·</span>
-            <span>{evidenceCount}份凭证</span>
+            <span>已上传 {evidenceCount} 份凭证</span>
             <span>·</span>
             <span>{caseItem.updatedAt}</span>
           </div>
 
-          {/* Row 6: Publisher + location */}
-          <div className="mt-1 flex items-center gap-1 text-[10px] text-muted-foreground/70 min-w-0 truncate">
-            {publisher && <span>{publisher.name}</span>}
-            <span>·</span>
-            <MapPin className="h-2.5 w-2.5 shrink-0" />
-            <span className="truncate">{simpleLocation}{caseItem.distance ? ` · ${caseItem.distance}` : ''}</span>
+          {/* Row 6: Publisher + location + CTA */}
+          <div className="mt-1.5 flex items-center justify-between">
+            <div className="flex items-center gap-1 text-[11px] text-muted-foreground min-w-0 truncate">
+              {publisher && <span>{publisher.name}发起</span>}
+              <span>·</span>
+              <MapPin className="h-3 w-3 shrink-0" />
+              <span className="truncate">{simpleLocation}{caseItem.distance ? ` · ${caseItem.distance}` : ''}</span>
+            </div>
           </div>
         </div>
       </button>
