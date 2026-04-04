@@ -3,7 +3,7 @@ import MobileLayout from '@/components/MobileLayout';
 import { mockCases } from '@/data/mockData';
 import { getPublisherForCase } from '@/data/publishers';
 import PublisherBadge from '@/components/PublisherBadge';
-import { ArrowLeft, Share2, Shield, CheckCircle2, Clock, Link2, AlertTriangle, Flame, ChevronRight, Star, Copy, Image, MessageSquare, Phone, PawPrint, ChevronDown } from 'lucide-react';
+import { ArrowLeft, Share2, Shield, CheckCircle2, Clock, Link2, AlertTriangle, Flame, ChevronRight, Star, Copy, Image, MessageSquare, Phone, PawPrint, ChevronDown, ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
 import { useState } from 'react';
 import cat1 from '@/assets/cat1.jpg';
@@ -11,6 +11,13 @@ import dog1 from '@/assets/dog1.jpg';
 import cat2 from '@/assets/cat2.jpg';
 import dog2 from '@/assets/dog2.jpg';
 import dog3 from '@/assets/dog3.jpg';
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerClose,
+} from '@/components/ui/drawer';
 
 const caseImages: Record<string, string> = { '1': cat1, '2': dog1, '3': cat2, '4': dog2, '5': dog3 };
 const caseNumbers: Record<string, number> = { '1': 241, '2': 242, '3': 243, '4': 244, '5': 245 };
@@ -40,6 +47,8 @@ const CaseDetail = () => {
   const [contactRevealed, setContactRevealed] = useState(false);
   const [descExpanded, setDescExpanded] = useState(false);
   const [needsExpanded, setNeedsExpanded] = useState(false);
+  const [helpDrawerOpen, setHelpDrawerOpen] = useState(false);
+  const [selectedNeed, setSelectedNeed] = useState<string | null>(null);
 
   if (!caseItem) {
     return (
@@ -57,7 +66,6 @@ const CaseDetail = () => {
 
   const helpNeeds = caseItem.needs.filter((n) => n.category === 'help');
 
-  // Merge timeline + evidences into unified record
   const records = [
     ...caseItem.timeline.map((t, i) => ({
       id: `t-${i}`,
@@ -92,6 +100,22 @@ const CaseDetail = () => {
   const handleCopyText = () => {
     const text = `【${caseItem.title}】\n${caseItem.description.slice(0, 80)}...\n当前状态：${caseItem.status}\n需要帮助：${helpNeeds.filter(n => !n.fulfilled).map(n => n.name).join('、')}\n📍 ${caseItem.city}\n#它援RescueLink #案号${formattedNo}`;
     navigator.clipboard.writeText(text).then(() => toast.success('已复制扩散文案'));
+  };
+
+  const handleHelpClick = (needName: string) => {
+    setSelectedNeed(needName);
+    setHelpDrawerOpen(true);
+  };
+
+  const handleCopyContact = () => {
+    navigator.clipboard.writeText(caseItem.contact);
+    toast.success('已复制联系方式');
+  };
+
+  const handleCopyPresetMsg = () => {
+    const msg = `你好，我看到了个案「${caseItem.title}」，我可能可以帮助「${selectedNeed}」这项需求，方便沟通一下具体情况吗？`;
+    navigator.clipboard.writeText(msg);
+    toast.success('已复制预设消息');
   };
 
   const descriptionShort = caseItem.description.length > 80 ? caseItem.description.slice(0, 80) + '…' : caseItem.description;
@@ -132,7 +156,7 @@ const CaseDetail = () => {
         </div>
       </div>
 
-      <div className="pb-28">
+      <div className="pb-24">
         <div className="px-4">
           {/* B. Case header */}
           <div className="mt-3 flex flex-wrap items-center gap-1.5">
@@ -161,13 +185,22 @@ const CaseDetail = () => {
             <span>· {caseItem.updatedAt}</span>
           </div>
 
-          {/* Heat as inline signal */}
-          <div className="mt-1.5 flex items-center gap-1 text-[11px] text-muted-foreground">
-            <Flame className="h-3 w-3 text-[hsl(24,80%,55%)]" />
-            <span>已有 {heatDisplay} 人次为它顶过</span>
+          {/* Heat inline signal + lightweight boost */}
+          <div className="mt-1.5 flex items-center gap-2 text-[11px] text-muted-foreground">
+            <div className="flex items-center gap-1">
+              <Flame className="h-3 w-3 text-[hsl(24,80%,55%)]" />
+              <span>已有 {heatDisplay} 人次为它顶过</span>
+            </div>
+            <button
+              onClick={handleBoost}
+              className="flex items-center gap-0.5 rounded-full bg-[hsl(24,55%,92%)] px-2 py-0.5 text-[11px] font-medium text-[hsl(24,55%,35%)] transition-transform active:scale-95"
+            >
+              <PawPrint className="h-3 w-3" strokeWidth={2.5} />
+              顶一顶
+            </button>
           </div>
 
-          {/* A. 当前情况 - compact with expand */}
+          {/* A. 当前情况 */}
           <div className="mt-4 rounded-xl bg-card p-4 shadow-sm">
             <h2 className="text-[15px] font-semibold text-foreground">当前情况</h2>
             <p className="mt-2 text-[13px] leading-relaxed text-foreground">
@@ -184,7 +217,7 @@ const CaseDetail = () => {
             )}
           </div>
 
-          {/* B. 发起人已处理 - lightweight checklist, no card shadow */}
+          {/* B. 发起人已处理 */}
           {caseItem.initiatorDone.length > 0 && (
             <div className="mt-2 rounded-xl bg-muted/40 px-4 py-3">
               <h2 className="text-[13px] font-semibold text-muted-foreground">发起人已处理</h2>
@@ -199,29 +232,38 @@ const CaseDetail = () => {
             </div>
           )}
 
-          {/* C. 当前还需要 - emphasized card */}
+          {/* C. 当前还需要 - actionable needs */}
           {helpNeeds.length > 0 && (
             <div className="mt-3 rounded-xl bg-card p-4 shadow-sm ring-1 ring-urgent/10">
               <h2 className="text-[15px] font-semibold text-foreground">当前还需要</h2>
-              <div className="mt-3 space-y-2.5">
+              <div className="mt-3 space-y-2">
                 {visibleNeeds.map((n) => (
-                  <div key={n.id}>
-                    <div className="flex items-center gap-2">
+                  <div key={n.id} className="flex items-start gap-2.5">
+                    <div className="mt-1">
                       {n.fulfilled ? (
                         <CheckCircle2 className="h-4 w-4 shrink-0 text-primary" />
                       ) : (
                         <div className="h-4 w-4 shrink-0 rounded-full border-2 border-urgent/40" />
                       )}
-                      <span className={`text-[13px] font-medium flex-1 ${n.fulfilled ? 'text-primary/60 line-through' : 'text-foreground'}`}>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <span className={`text-[13px] font-medium ${n.fulfilled ? 'text-primary/60 line-through' : 'text-foreground'}`}>
                         {n.name}
                       </span>
-                      <span className={`shrink-0 rounded-md px-2 py-0.5 text-[11px] font-medium ${
-                        n.fulfilled ? 'bg-primary/10 text-primary' : 'bg-urgent/10 text-urgent'
-                      }`}>
-                        {n.fulfilled ? '已有人帮忙' : '需要帮助'}
-                      </span>
+                      {n.desc && <p className="mt-0.5 text-[11px] text-muted-foreground leading-snug">{n.desc}</p>}
                     </div>
-                    {n.desc && <p className="ml-6 mt-0.5 text-[11px] text-muted-foreground">{n.desc}</p>}
+                    {!n.fulfilled ? (
+                      <button
+                        onClick={() => handleHelpClick(n.name)}
+                        className="shrink-0 rounded-lg bg-primary px-2.5 py-1 text-[11px] font-semibold text-primary-foreground transition-transform active:scale-95"
+                      >
+                        我来帮忙
+                      </button>
+                    ) : (
+                      <span className="shrink-0 rounded-lg bg-primary/10 px-2 py-1 text-[11px] font-medium text-primary">
+                        已有人帮忙
+                      </span>
+                    )}
                   </div>
                 ))}
                 {needsLong && !needsExpanded && (
@@ -233,23 +275,32 @@ const CaseDetail = () => {
                   </button>
                 )}
                 {needsExpanded && hiddenNeeds.map((n) => (
-                  <div key={n.id}>
-                    <div className="flex items-center gap-2">
+                  <div key={n.id} className="flex items-start gap-2.5">
+                    <div className="mt-1">
                       {n.fulfilled ? (
                         <CheckCircle2 className="h-4 w-4 shrink-0 text-primary" />
                       ) : (
                         <div className="h-4 w-4 shrink-0 rounded-full border-2 border-urgent/40" />
                       )}
-                      <span className={`text-[13px] font-medium flex-1 ${n.fulfilled ? 'text-primary/60 line-through' : 'text-foreground'}`}>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <span className={`text-[13px] font-medium ${n.fulfilled ? 'text-primary/60 line-through' : 'text-foreground'}`}>
                         {n.name}
                       </span>
-                      <span className={`shrink-0 rounded-md px-2 py-0.5 text-[11px] font-medium ${
-                        n.fulfilled ? 'bg-primary/10 text-primary' : 'bg-urgent/10 text-urgent'
-                      }`}>
-                        {n.fulfilled ? '已有人帮忙' : '需要帮助'}
-                      </span>
+                      {n.desc && <p className="mt-0.5 text-[11px] text-muted-foreground leading-snug">{n.desc}</p>}
                     </div>
-                    {n.desc && <p className="ml-6 mt-0.5 text-[11px] text-muted-foreground">{n.desc}</p>}
+                    {!n.fulfilled ? (
+                      <button
+                        onClick={() => handleHelpClick(n.name)}
+                        className="shrink-0 rounded-lg bg-primary px-2.5 py-1 text-[11px] font-semibold text-primary-foreground transition-transform active:scale-95"
+                      >
+                        我来帮忙
+                      </button>
+                    ) : (
+                      <span className="shrink-0 rounded-lg bg-primary/10 px-2 py-1 text-[11px] font-medium text-primary">
+                        已有人帮忙
+                      </span>
+                    )}
                   </div>
                 ))}
               </div>
@@ -259,75 +310,34 @@ const CaseDetail = () => {
             </div>
           )}
 
-          {/* D. 如何支持 - clear hierarchy */}
-          <div className="mt-3 rounded-xl bg-card p-4 shadow-sm">
-            <h2 className="text-[15px] font-semibold text-foreground">如何支持</h2>
-
-            {/* Primary CTA */}
-            <button
-              onClick={() => setContactRevealed(true)}
-              className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3.5 text-[15px] font-semibold text-primary-foreground transition-colors active:bg-primary/90"
-            >
-              <Phone className="h-4.5 w-4.5" />
-              联系发起人
-            </button>
-
-            {contactRevealed && (
-              <div className="mt-2.5 rounded-lg bg-[hsl(38,55%,95%)] p-3">
-                <p className="text-[13px] font-medium text-foreground">{caseItem.contact}</p>
-                <button
-                  onClick={() => { navigator.clipboard.writeText(caseItem.contact); toast.success('已复制联系方式'); }}
-                  className="mt-1.5 flex items-center gap-1 text-[11px] font-medium text-primary"
-                >
-                  <Copy className="h-3 w-3" /> 复制联系方式
-                </button>
-                <p className="mt-1 text-[10px] text-muted-foreground leading-relaxed">
-                  如可提供安置、转运、领养接手或资金支持，请直接联系发起人确认细节。
-                </p>
-              </div>
-            )}
-
-            {/* Secondary actions: boost + poster */}
-            <div className="mt-3 flex gap-2">
-              <button
-                onClick={handleBoost}
-                className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-[hsl(24,55%,92%)] py-2.5 text-[13px] font-semibold text-[hsl(24,55%,30%)] transition-transform active:scale-[0.97]"
-              >
-                <PawPrint className="h-4.5 w-4.5" strokeWidth={2.5} />
-                顶一顶
-              </button>
+          {/* D. 帮它扩散 - spread tools */}
+          <div className="mt-3 rounded-xl bg-muted/40 px-4 py-3">
+            <h2 className="text-[14px] font-semibold text-foreground">帮它扩散</h2>
+            <div className="mt-2.5 flex gap-2">
               <button
                 onClick={() => toast.success('海报生成中…')}
-                className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-muted/70 py-2.5 text-[13px] font-medium text-foreground transition-transform active:scale-[0.97]"
+                className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-card py-2.5 text-[13px] font-medium text-foreground shadow-sm transition-transform active:scale-[0.97]"
               >
                 <Image className="h-4 w-4 text-primary" />
                 生成海报
               </button>
+              <button
+                onClick={handleCopyText}
+                className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-card py-2.5 text-[13px] font-medium text-foreground shadow-sm transition-transform active:scale-[0.97]"
+              >
+                <Copy className="h-3.5 w-3.5 text-primary" />
+                复制文案
+              </button>
+              <button
+                onClick={() => toast.success('已生成小程序卡片')}
+                className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-card py-2.5 text-[13px] font-medium text-foreground shadow-sm transition-transform active:scale-[0.97]"
+              >
+                <MessageSquare className="h-3.5 w-3.5 text-primary" />
+                转发小程序
+              </button>
             </div>
-
-            {/* Spread tools group */}
-            <div className="mt-3">
-              <p className="text-[12px] font-medium text-muted-foreground mb-2">帮它扩散</p>
-              <div className="flex gap-2">
-                <button
-                  onClick={handleCopyText}
-                  className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-muted/50 py-2 text-[12px] text-muted-foreground transition-transform active:scale-[0.97]"
-                >
-                  <Copy className="h-3.5 w-3.5" />
-                  复制文案
-                </button>
-                <button
-                  onClick={() => toast.success('已生成小程序卡片')}
-                  className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-muted/50 py-2 text-[12px] text-muted-foreground transition-transform active:scale-[0.97]"
-                >
-                  <MessageSquare className="h-3.5 w-3.5" />
-                  转发小程序
-                </button>
-              </div>
-            </div>
-
-            <p className="mt-3 text-[10px] text-muted-foreground leading-relaxed">
-              分享、持续更新和上传凭证，也会帮助个案获得更多关注。分享可获得积分。
+            <p className="mt-2 text-[10px] text-muted-foreground leading-relaxed">
+              分享、扩散和持续更新，都能帮助个案获得更多关注；完成扩散后可累计积分。
             </p>
           </div>
 
@@ -387,15 +397,15 @@ const CaseDetail = () => {
         </div>
       </div>
 
-      {/* G. Fixed bottom bar */}
+      {/* Fixed bottom bar: 去扩散 + 联系发起人 */}
       <div className="fixed bottom-0 left-1/2 z-50 w-full max-w-[430px] -translate-x-1/2 border-t border-border bg-card px-4 py-3 safe-bottom">
         <div className="flex gap-3">
           <button
-            onClick={handleBoost}
-            className="flex items-center justify-center gap-1.5 rounded-xl bg-[hsl(24,55%,92%)] px-4 py-3 text-[14px] font-semibold text-[hsl(24,55%,30%)] transition-colors active:bg-[hsl(24,55%,86%)]"
+            onClick={handleCopyText}
+            className="flex items-center justify-center gap-1.5 rounded-xl border border-border bg-card px-5 py-3 text-[14px] font-semibold text-foreground transition-colors active:bg-muted"
           >
-            <PawPrint className="h-5 w-5" strokeWidth={2.5} />
-            顶一顶
+            <ExternalLink className="h-4 w-4 text-primary" />
+            去扩散
           </button>
           <button
             onClick={() => setContactRevealed(true)}
@@ -406,6 +416,70 @@ const CaseDetail = () => {
           </button>
         </div>
       </div>
+
+      {/* Contact reveal dialog */}
+      <Drawer open={contactRevealed} onOpenChange={setContactRevealed}>
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>联系发起人</DrawerTitle>
+          </DrawerHeader>
+          <div className="px-4 pb-6">
+            <div className="rounded-lg bg-[hsl(38,55%,95%)] p-3">
+              <p className="text-[14px] font-medium text-foreground">{caseItem.contact}</p>
+              <button
+                onClick={handleCopyContact}
+                className="mt-2 flex items-center gap-1 text-[12px] font-medium text-primary"
+              >
+                <Copy className="h-3 w-3" /> 复制联系方式
+              </button>
+            </div>
+            <p className="mt-3 text-[12px] text-muted-foreground leading-relaxed">
+              如可提供安置、转运、领养接手或资金支持，请直接联系发起人确认细节。
+            </p>
+          </div>
+        </DrawerContent>
+      </Drawer>
+
+      {/* Help offer drawer */}
+      <Drawer open={helpDrawerOpen} onOpenChange={setHelpDrawerOpen}>
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>帮助「{selectedNeed}」</DrawerTitle>
+          </DrawerHeader>
+          <div className="px-4 pb-6 space-y-3">
+            <p className="text-[13px] text-muted-foreground leading-relaxed">
+              你可以直接联系发起人，沟通这项需求的具体情况。
+            </p>
+
+            <div className="rounded-lg bg-[hsl(38,55%,95%)] p-3">
+              <p className="text-[14px] font-medium text-foreground">{caseItem.contact}</p>
+              <button
+                onClick={handleCopyContact}
+                className="mt-2 flex items-center gap-1 text-[12px] font-medium text-primary"
+              >
+                <Copy className="h-3 w-3" /> 复制联系方式
+              </button>
+            </div>
+
+            <div className="rounded-lg border border-border p-3">
+              <p className="text-[11px] font-medium text-muted-foreground mb-1.5">预设消息</p>
+              <p className="text-[12px] text-foreground leading-relaxed">
+                你好，我看到了个案「{caseItem.title}」，我可能可以帮助「{selectedNeed}」这项需求，方便沟通一下具体情况吗？
+              </p>
+              <button
+                onClick={handleCopyPresetMsg}
+                className="mt-2 flex items-center gap-1 text-[12px] font-medium text-primary"
+              >
+                <Copy className="h-3 w-3" /> 复制消息
+              </button>
+            </div>
+
+            <p className="text-[11px] text-muted-foreground leading-relaxed">
+              个案的实际帮助主要在线下完成，请直接与发起人确认需求细节。
+            </p>
+          </div>
+        </DrawerContent>
+      </Drawer>
     </MobileLayout>
   );
 };
