@@ -5,6 +5,7 @@ import { Search, MapPin, Bell, Heart, Map, Package, ShoppingBag, SlidersHorizont
 import CaseCard from '@/components/CaseCard';
 import { useState } from 'react';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose } from '@/components/ui/drawer';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 const channels = [
   { label: '领养', path: '/channel/adoption', icon: Heart, bg: 'bg-[hsl(30,60%,95%)]', iconColor: 'text-[hsl(24,75%,50%)]', titleColor: 'text-[hsl(24,60%,35%)]' },
