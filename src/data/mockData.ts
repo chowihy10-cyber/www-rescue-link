@@ -7,15 +7,17 @@ export interface CaseItem {
   city: string;
   distance?: string;
   updatedAt: string;
-  totalPoints: number;
-  earnedPoints: number;
   isUrgent: boolean;
+  urgencyLevel: '一般' | '较急' | '紧急';
   image: string;
   description: string;
   contact: string;
   helpType: 'emergency' | 'supply' | 'foster' | 'adopt' | 'lost';
   urgentNeed?: string;
+  heatValue: number;
   needs: NeedItem[];
+  /** What the initiator has already done */
+  initiatorDone: string[];
   timeline: TimelineItem[];
   evidences: EvidenceItem[];
 }
@@ -23,11 +25,9 @@ export interface CaseItem {
 export interface NeedItem {
   id: string;
   name: string;
-  points: number;
   fulfilled: boolean;
-  claimedBy?: string;
-  /** 'assist' = 可助力项目, 'collab' = 协作需求 */
-  category: 'assist' | 'collab';
+  /** 'help' = real help needs (contact-based), 'spread' = spread support */
+  category: 'help' | 'spread';
   desc?: string;
 }
 
@@ -79,6 +79,35 @@ export interface LostPetClue {
   points: number;
 }
 
+export interface ShelterItem {
+  id: string;
+  name: string;
+  location: string;
+  avatar: string;
+  description: string;
+  animalCount: number;
+  supplyNeeds: ShelterSupplyNeed[];
+  redeemableItems: ShelterRedeemItem[];
+  feedbackMessages: string[];
+  urgency: '日常' | '紧缺';
+}
+
+export interface ShelterSupplyNeed {
+  id: string;
+  name: string;
+  pointsCost: number;
+  fulfilled: boolean;
+  desc?: string;
+}
+
+export interface ShelterRedeemItem {
+  id: string;
+  name: string;
+  pointsCost: number;
+  desc: string;
+  shelterName: string;
+}
+
 export const mockUser = {
   name: '小明',
   avatar: '',
@@ -102,20 +131,24 @@ export const mockCases: CaseItem[] = [
     city: '北京',
     distance: '1.2km',
     updatedAt: '10分钟前',
-    totalPoints: 500,
-    earnedPoints: 320,
     isUrgent: true,
+    urgencyLevel: '紧急',
     image: '',
     description: '在望京SOHO停车场发现一只受伤的橘猫，右前腿疑似骨折，精神较差，需要尽快送医治疗。发起人已完成基础临时安置，并正在协调后续送医处理。',
     contact: '微信：rescue_bj_001',
     helpType: 'emergency',
     urgentNeed: '急需送医',
+    heatValue: 86,
+    initiatorDone: [
+      '已拍照记录现场情况',
+      '已完成基础临时安置',
+      '正在联系附近可接诊医院',
+    ],
     needs: [
-      { id: 'n1', name: '首诊检查费用', points: 200, fulfilled: false, category: 'assist', desc: '预计用于首诊、拍片与基础处理' },
-      { id: 'n2', name: '外出航空箱', points: 80, fulfilled: true, claimedBy: '爱心用户A', category: 'assist', desc: '用于安全转运与后续就诊' },
-      { id: 'n3', name: '术前基础物资', points: 70, fulfilled: false, category: 'assist', desc: '包含一次性尿垫、湿巾等' },
-      { id: 'n4', name: '协助送往医院', points: 0, fulfilled: false, category: 'collab', desc: '希望尽快将动物送至附近可接诊医院' },
-      { id: 'n5', name: '短期安置', points: 0, fulfilled: false, category: 'collab', desc: '如今晚无法完成治疗，需1–3天临时照护' },
+      { id: 'n1', name: '协助转运', fulfilled: false, category: 'help', desc: '希望尽快将动物送至附近可接诊医院' },
+      { id: 'n2', name: '临时安置', fulfilled: false, category: 'help', desc: '如今晚无法完成治疗，需1–3天临时照护' },
+      { id: 'n3', name: '基础检查', fulfilled: false, category: 'help', desc: '首诊、拍片与基础处理' },
+      { id: 'n4', name: '帮忙扩散', fulfilled: false, category: 'spread', desc: '分享到宠物群、朋友圈帮助更多人看到' },
     ],
     timeline: [
       { date: '2026-04-03 14:30', content: '发现受伤橘猫，拍照记录现场情况', type: 'milestone' },
@@ -136,24 +169,28 @@ export const mockCases: CaseItem[] = [
     city: '上海',
     distance: '3.8km',
     updatedAt: '1小时前',
-    totalPoints: 800,
-    earnedPoints: 450,
     isUrgent: false,
+    urgencyLevel: '较急',
     image: '',
     description: '世纪公园附近发现一只流浪狗妈妈带着4只幼崽，狗妈妈已经做过绝育（耳标），幼崽大约3周大。需要临时寄养家庭。',
     contact: '微信：rescue_sh_002',
     helpType: 'foster',
+    heatValue: 52,
+    initiatorDone: [
+      '已确认狗妈妈已绝育（耳标）',
+      '已确认幼崽数量与基础情况',
+      '已完成临时投喂',
+    ],
     needs: [
-      { id: 'n5', name: '狗粮（幼犬）', points: 120, fulfilled: false, category: 'assist', desc: '幼犬专用粮约5kg' },
-      { id: 'n6', name: '驱虫药', points: 80, fulfilled: true, claimedBy: '爱心用户B', category: 'assist' },
-      { id: 'n8', name: '基础体检', points: 200, fulfilled: false, category: 'assist', desc: '狗妈妈和幼崽的基础健康检查' },
-      { id: 'n9', name: '保暖垫子', points: 100, fulfilled: true, claimedBy: '爱心用户C', category: 'assist' },
-      { id: 'n7', name: '寄养家庭', points: 0, fulfilled: false, category: 'collab', desc: '需要有经验的临时寄养家庭接手' },
+      { id: 'n5', name: '寄养家庭', fulfilled: false, category: 'help', desc: '需要有经验的临时寄养家庭接手' },
+      { id: 'n6', name: '基础体检', fulfilled: false, category: 'help', desc: '狗妈妈和幼崽的基础健康检查' },
+      { id: 'n7', name: '领养接手', fulfilled: false, category: 'help', desc: '幼崽长大后需要领养人' },
+      { id: 'n8', name: '帮忙扩散', fulfilled: false, category: 'spread', desc: '分享到领养群帮助更多人看到' },
     ],
     timeline: [
       { date: '2026-04-02 09:00', content: '发现狗妈妈和幼崽', type: 'milestone' },
       { date: '2026-04-02 11:00', content: '确认狗妈妈已绝育', type: 'update' },
-      { date: '2026-04-03 08:00', content: '驱虫药已认领', type: 'update' },
+      { date: '2026-04-03 08:00', content: '已完成临时投喂', type: 'update' },
     ],
     evidences: [
       { id: 'e3', type: '现场照片', uploadedAt: '2026-04-02 09:05', confirmed: true, chainStatus: 'stored', chainHash: '0xcd5e...9a1b', chainId: 'AVX-2026-0402-003' },
@@ -168,19 +205,21 @@ export const mockCases: CaseItem[] = [
     city: '广州',
     distance: '5.4km',
     updatedAt: '3小时前',
-    totalPoints: 1200,
-    earnedPoints: 900,
     isUrgent: false,
+    urgencyLevel: '一般',
     image: '',
     description: '棠下村社区猫TNR计划第12期，本期目标绝育8只社区猫。目前已完成5只，还需要3个绝育名额的资源支持。',
     contact: '微信：tnr_gz_012',
     helpType: 'supply',
+    heatValue: 134,
+    initiatorDone: [
+      '已完成前5只绝育手术',
+      '猫粮和笼具已到位',
+      '已上传医院单据与术后照片',
+    ],
     needs: [
-      { id: 'n10', name: '绝育名额 x3', points: 450, fulfilled: false, category: 'assist', desc: '每只含手术费及术后观察' },
-      { id: 'n11', name: '术后护理用品', points: 150, fulfilled: false, category: 'assist' },
-      { id: 'n12', name: '猫粮补给', points: 200, fulfilled: true, claimedBy: '爱心用户D', category: 'assist' },
-      { id: 'n14', name: '运输笼具', points: 80, fulfilled: true, claimedBy: '爱心用户F', category: 'assist' },
-      { id: 'n13b', name: '协助转运', points: 0, fulfilled: false, category: 'collab', desc: '需要协助将社区猫送往合作医院' },
+      { id: 'n10', name: '协助转运', fulfilled: false, category: 'help', desc: '需要协助将社区猫送往合作医院' },
+      { id: 'n11', name: '帮忙扩散', fulfilled: false, category: 'spread', desc: '分享到社区群帮助招募接力' },
     ],
     timeline: [
       { date: '2026-03-28', content: '第12期TNR计划启动', type: 'milestone' },
@@ -202,17 +241,21 @@ export const mockCases: CaseItem[] = [
     city: '成都',
     distance: '8.1km',
     updatedAt: '昨天',
-    totalPoints: 300,
-    earnedPoints: 280,
     isUrgent: false,
+    urgencyLevel: '一般',
     image: '',
     description: '一只约2岁的泰迪被主人弃养在小区门口，已完成体检和疫苗接种，性格温顺亲人，适合有经验的领养人。',
     contact: '微信：adopt_cd_004',
     helpType: 'adopt',
+    heatValue: 28,
+    initiatorDone: [
+      '已完成体检和疫苗接种',
+      '已发布领养信息',
+      '已临时寄养中',
+    ],
     needs: [
-      { id: 'n15', name: '领养审核', points: 50, fulfilled: false, category: 'assist' },
-      { id: 'n16', name: '寄养过渡', points: 150, fulfilled: true, claimedBy: '爱心用户G', category: 'assist' },
-      { id: 'n17', name: '狗粮', points: 100, fulfilled: true, claimedBy: '爱心用户H', category: 'assist' },
+      { id: 'n15', name: '领养接手', fulfilled: false, category: 'help', desc: '适合有养宠经验的领养人' },
+      { id: 'n16', name: '帮忙扩散', fulfilled: false, category: 'spread', desc: '分享到领养群帮助找到合适主人' },
     ],
     timeline: [
       { date: '2026-03-30', content: '发现被弃养泰迪', type: 'milestone' },
@@ -232,19 +275,24 @@ export const mockCases: CaseItem[] = [
     city: '深圳',
     distance: '2.3km',
     updatedAt: '2小时前',
-    totalPoints: 600,
-    earnedPoints: 150,
     isUrgent: true,
+    urgencyLevel: '紧急',
     image: '',
-    description: '高速路边发现一只受伤的中型犬，后腿有明显外伤，已送至宠物医院。目前正在治疗中，需要医疗费用和术后护理支持。',
+    description: '高速路边发现一只受伤的中型犬，后腿有明显外伤，已送至宠物医院。目前正在治疗中，需要后续护理支持和领养接手。',
     contact: '微信：rescue_sz_005',
     helpType: 'emergency',
-    urgentNeed: '急需接力',
+    urgentNeed: '后续护理',
+    heatValue: 67,
+    initiatorDone: [
+      '已成功救出并送至宠物医院',
+      '已开始手术治疗',
+      '已上传医院收治记录',
+    ],
     needs: [
-      { id: 'n18', name: '手术费用', points: 300, fulfilled: false, category: 'assist', desc: '含手术、麻醉及术后观察' },
-      { id: 'n19', name: '住院护理', points: 150, fulfilled: false, category: 'assist' },
-      { id: 'n20', name: '术后药品', points: 80, fulfilled: false, category: 'assist' },
-      { id: 'n21', name: '康复期狗粮', points: 70, fulfilled: false, category: 'assist' },
+      { id: 'n18', name: '后续复查', fulfilled: false, category: 'help', desc: '术后需要定期复查' },
+      { id: 'n19', name: '临时安置', fulfilled: false, category: 'help', desc: '出院后需要安静休养环境' },
+      { id: 'n20', name: '领养接手', fulfilled: false, category: 'help', desc: '康复后寻找长期领养人' },
+      { id: 'n21', name: '帮忙扩散', fulfilled: false, category: 'spread', desc: '分享到社交媒体帮助更多人看到' },
     ],
     timeline: [
       { date: '2026-04-03 10:00', content: '在高速路边发现受伤流浪犬', type: 'milestone' },
@@ -274,6 +322,71 @@ export const mockAdoptions = [
   { id: 'a1', type: '猫', name: '花花', age: '约1岁', gender: '母', location: '北京', status: '可领养', features: '三花猫，已绝育已免疫', character: '亲人粘人' },
   { id: 'a2', type: '狗', name: '旺财', age: '约3岁', gender: '公', location: '上海', status: '可领养', features: '中华田园犬，已绝育', character: '温顺听话' },
   { id: 'a3', type: '猫', name: '雪球', age: '约6个月', gender: '公', location: '成都', status: '待审核', features: '白色长毛，蓝眼睛', character: '活泼好动' },
+];
+
+export const mockShelters: ShelterItem[] = [
+  {
+    id: 'sh1',
+    name: '朝阳流浪猫救助小院',
+    location: '北京 · 朝阳区',
+    avatar: '',
+    description: '专注社区流浪猫TNR与救助，目前收容32只猫咪，日常运营需要持续物资支持。',
+    animalCount: 32,
+    urgency: '紧缺',
+    supplyNeeds: [
+      { id: 'sn1', name: '猫粮 50斤', pointsCost: 150, fulfilled: false, desc: '日常口粮，约可维持2周' },
+      { id: 'sn2', name: '猫砂 20袋', pointsCost: 100, fulfilled: false, desc: '膨润土猫砂，每周消耗约10袋' },
+      { id: 'sn3', name: '驱虫药 30支', pointsCost: 80, fulfilled: true, desc: '体内外驱虫' },
+    ],
+    redeemableItems: [
+      { id: 'ri1', name: '买给小院：猫粮5斤装', pointsCost: 50, desc: '直接寄送到小院，含物流追踪', shelterName: '朝阳流浪猫救助小院' },
+      { id: 'ri2', name: '买给小院：猫砂5袋', pointsCost: 40, desc: '直接寄送到小院，含物流追踪', shelterName: '朝阳流浪猫救助小院' },
+    ],
+    feedbackMessages: [
+      '感谢大家上周捐赠的猫粮，32只毛孩子吃得很开心！',
+      '本月已完成3只社区猫的绝育手术，谢谢每一位支持者。',
+    ],
+  },
+  {
+    id: 'sh2',
+    name: '浦东爱心狗狗之家',
+    location: '上海 · 浦东新区',
+    avatar: '',
+    description: '收容被弃养和流浪狗只，提供医疗、寄养和领养服务，目前照护18只狗狗。',
+    animalCount: 18,
+    urgency: '日常',
+    supplyNeeds: [
+      { id: 'sn4', name: '狗粮 80斤', pointsCost: 200, fulfilled: false, desc: '大中型犬粮，约可维持10天' },
+      { id: 'sn5', name: '笼子 5个', pointsCost: 120, fulfilled: false, desc: '中型犬用不锈钢笼' },
+      { id: 'sn6', name: '垫子 10个', pointsCost: 60, fulfilled: true, desc: '保暖棉垫' },
+    ],
+    redeemableItems: [
+      { id: 'ri3', name: '买给小院：狗粮10斤装', pointsCost: 60, desc: '直接寄送到小院，含物流追踪', shelterName: '浦东爱心狗狗之家' },
+    ],
+    feedbackMessages: [
+      '上个月有2只狗狗成功被领养，感谢大家的扩散！',
+      '新到了一批垫子，狗狗们终于不用睡硬地板了。',
+    ],
+  },
+  {
+    id: 'sh3',
+    name: '天河社区猫TNR基地',
+    location: '广州 · 天河区',
+    avatar: '',
+    description: '社区猫绝育与管理基地，与多家医院合作开展TNR计划。',
+    animalCount: 45,
+    urgency: '日常',
+    supplyNeeds: [
+      { id: 'sn7', name: '绝育名额 x10', pointsCost: 300, fulfilled: false, desc: '每只含手术费及术后观察' },
+      { id: 'sn8', name: '术后恢复用品', pointsCost: 80, fulfilled: false },
+    ],
+    redeemableItems: [
+      { id: 'ri4', name: '买给小院：术后营养罐头x6', pointsCost: 45, desc: '直接寄送到小院，含物流追踪', shelterName: '天河社区猫TNR基地' },
+    ],
+    feedbackMessages: [
+      '第11期TNR计划圆满完成，共绝育12只社区猫。',
+    ],
+  },
 ];
 
 export const mockShelterNeeds = [
@@ -311,7 +424,7 @@ export const helpActions = [
 ];
 
 export const caseHelpActions = [
-  { id: 'ch1', name: '赠送积分', desc: '把积分赠送给需要帮助的案例', icon: '💝' },
-  { id: 'ch2', name: '认领需求', desc: '直接认领案例中的具体需求', icon: '✅' },
-  { id: 'ch3', name: '查看待助案例', desc: '浏览正在等待帮助的救助案例', icon: '👀' },
+  { id: 'ch1', name: '顶一顶', desc: '帮它增加热力值，让更多人看到', icon: '🐾' },
+  { id: 'ch2', name: '联系发起人', desc: '直接联系发起人确认如何帮助', icon: '📞' },
+  { id: 'ch3', name: '帮忙扩散', desc: '生成海报或复制文案分享出去', icon: '📤' },
 ];
