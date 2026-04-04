@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import MobileLayout from '@/components/MobileLayout';
+import { getCaseById } from '@/lib/caseStore';
 import { mockCases } from '@/data/mockData';
 import { getPublisherForCase } from '@/data/publishers';
 import PublisherBadge from '@/components/PublisherBadge';
@@ -39,7 +40,7 @@ const PawClapAnimation = ({ onDone }: { onDone: () => void }) => {
 const CaseDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const caseItem = mockCases.find((c) => c.id === id);
+  const caseItem = getCaseById(id || '');
   const [saved, setSaved] = useState(false);
   const [showPawClap, setShowPawClap] = useState(false);
   const [localHeat, setLocalHeat] = useState(0);
@@ -60,9 +61,11 @@ const CaseDetail = () => {
 
   const heatDisplay = localHeat || caseItem.heatValue;
   const publisher = getPublisherForCase(caseItem.id);
-  const imgSrc = caseImages[caseItem.id || '1'] || cat1;
-  const caseNo = caseNumbers[caseItem.id] || parseInt(caseItem.id);
+  const imgSrc = caseItem.image || caseImages[caseItem.id || '1'] || cat1;
+  const extra = (caseItem as any)._extra;
+  const caseNo = extra?.caseNo || caseNumbers[caseItem.id] || parseInt(caseItem.id) || 0;
   const formattedNo = String(caseNo).padStart(5, '0');
+  const txHash = extra?.txHash || caseItem.evidences?.[0]?.chainHash || '';
 
   const helpNeeds = caseItem.needs.filter((n) => n.category === 'help');
 

@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import MobileLayout from '@/components/MobileLayout';
-import { mockUser, mockCases } from '@/data/mockData';
+import { mockUser } from '@/data/mockData';
+import { getAllCases } from '@/lib/caseStore';
 import { Search, Bell, Heart, Map, Package, ShoppingBag, SlidersHorizontal, X } from 'lucide-react';
 import CaseCard from '@/components/CaseCard';
 import { useState } from 'react';
@@ -29,7 +30,8 @@ const Index = () => {
 
   const hasAdvancedFilter = statusFilter !== '全部' || urgencyFilter !== '全部' || rangeFilter !== '全部' || sortBy !== '最新发布';
 
-  const filteredCases = mockCases.filter((c) => {
+  const allCasesData = getAllCases();
+  const filteredCases = allCasesData.filter((c) => {
     const animalMatch = animalFilter === '全部' ||
       (animalFilter === '猫' && c.animalType === '猫') ||
       (animalFilter === '狗' && c.animalType === '狗') ||
