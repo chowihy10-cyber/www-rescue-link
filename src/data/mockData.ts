@@ -306,9 +306,26 @@ export const mockCases: CaseItem[] = [
 ];
 
 export const mockLostPets = [
-  { id: 'l1', type: '猫', name: '橘子', location: '北京市海淀区中关村', lostDate: '2026-04-01', features: '橘色短毛，脖子有蓝色项圈', contact: '微信：find_pet_001', lat: 39.984, lng: 116.316 },
-  { id: 'l2', type: '狗', name: '豆豆', location: '上海市徐汇区衡山路', lostDate: '2026-03-30', features: '白色比熊，左耳有棕色斑', contact: '微信：find_pet_002', lat: 31.214, lng: 121.448 },
-  { id: 'l3', type: '猫', name: '小黑', location: '广州市越秀区东山口', lostDate: '2026-04-02', features: '全黑短毛猫，绿色眼睛', contact: '微信：find_pet_003', lat: 23.129, lng: 113.280 },
+  { id: 'l1', type: '狗', name: '豆豆', location: '上海市徐汇区衡山路', lostDate: '2026-03-30', features: '白色比熊，左耳有棕色斑', contact: '微信：find_pet_002', lat: 31.214, lng: 121.448, reward: '¥500', mode: 'reward' as const },
+  { id: 'l2', type: '狗', name: '大黄', location: '上海市浦东新区世纪公园', lostDate: '2026-04-01', features: '黄色中华田园犬，戴红色项圈', contact: '微信：find_pet_004', lat: 31.218, lng: 121.544, reward: '¥300', mode: 'reward' as const },
+  { id: 'l3', type: '狗', name: 'Lucky', location: '上海市静安区南京西路', lostDate: '2026-04-02', features: '棕色泰迪，穿蓝色衣服', contact: '微信：find_pet_005', lat: 31.229, lng: 121.450, reward: '', mode: 'reward' as const },
+];
+
+export interface SpottedPet {
+  id: string;
+  photo: string;
+  time: string;
+  location: string;
+  description: string;
+  submitter: string;
+  animalType: '猫' | '狗' | '其他';
+  status: '待认领' | '已匹配' | '已关闭';
+}
+
+export const mockSpottedPets: SpottedPet[] = [
+  { id: 'sp1', photo: '', time: '2026-04-03 16:20', location: '徐汇区复兴西路', description: '一只白色小型犬在路边徘徊，看起来很干净，疑似走失', submitter: '热心市民A', animalType: '狗', status: '待认领' },
+  { id: 'sp2', photo: '', time: '2026-04-03 09:45', location: '浦东新区陆家嘴花园', description: '发现一只棕色泰迪在绿化带附近，穿着衣服，不怕人', submitter: '热心市民B', animalType: '狗', status: '已匹配' },
+  { id: 'sp3', photo: '', time: '2026-04-02 18:30', location: '静安区愚园路', description: '一只黄色中型犬在小区门口等了很久，有红色项圈', submitter: '热心市民C', animalType: '狗', status: '待认领' },
 ];
 
 export const mockClues: LostPetClue[] = [
