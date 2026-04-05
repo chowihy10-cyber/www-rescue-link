@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import MobileLayout from '@/components/MobileLayout';
 import { mockUser } from '@/data/mockData';
 import { getAllCases } from '@/lib/caseStore';
-import { Search, Bell, Heart, MapPin, Package, ShoppingBag, SlidersHorizontal, X } from 'lucide-react';
+import { Search, Bell, Heart, MapPin, Package, ShoppingBag, SlidersHorizontal, X, Map } from 'lucide-react';
 import CaseCard from '@/components/CaseCard';
 import { useState } from 'react';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose } from '@/components/ui/drawer';
