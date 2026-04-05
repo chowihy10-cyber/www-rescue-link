@@ -182,6 +182,7 @@ export async function createCaseOnChain(
       abi: RESCUELINK_ABI,
       functionName: 'createCase',
       args: [caseIdBytes32, metaHashBytes32],
+      chain: avalancheFuji,
     });
 
     console.log('6. writeContract Success! TxHash:', txHash);
@@ -247,6 +248,7 @@ export async function addUpdateOnChain(
     abi: RESCUELINK_ABI,
     functionName: 'addUpdate',
     args: [caseIdBytes32, updateHashBytes32, updateType],
+    chain: avalancheFuji,
   });
 
   return { txHash };
